@@ -1,24 +1,54 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+const BACKGROUND = '#0a0f1c';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
+const CustomDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: BACKGROUND,
+    card: '#111827',
+    text: '#FFFFFF',
+    border: 'rgba(255,255,255,0.08)',
+  },
 };
 
+export const unstable_settings = {
+  initialRouteName: 'onboarding',
+};
+
+import { FormDataProvider } from '../context/FormDataContext';
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    // Force the root background to match the theme
+    SystemUI.setBackgroundColorAsync(BACKGROUND);
+  }, []);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <FormDataProvider>
+      <ThemeProvider value={CustomDarkTheme}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="onboarding" />
+          <Stack.Screen name="signup" />
+          <Stack.Screen name="otp" />
+          <Stack.Screen name="terms" />
+          <Stack.Screen name="privacy" />
+          <Stack.Screen name="success" />
+          <Stack.Screen name="nafath" />
+          <Stack.Screen name="resend-nafath" />
+          <Stack.Screen name="login" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
+        </Stack>
+        <StatusBar style="light" />
+      </ThemeProvider>
+    </FormDataProvider>
   );
 }
