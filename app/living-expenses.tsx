@@ -9,6 +9,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -17,10 +18,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useFormData } from "../context/FormDataContext";
 
-const PRIMARY = "#10b981"; // Emerald
-const SECONDARY = "#eab308"; // Gold/Orange Theme
-const BACKGROUND = "#0a0a0f";
-const GLASS = "rgba(255,255,255,0.07)";
+const PRIMARY = "#2E8B57"; // Edge Finance Green
+const WHITE = "#ffffff";
+const TEXT_MAIN = "#1f2937";
+const TEXT_SECONDARY = "#64748b";
+const BORDER_COLOR = "#cbd5e1";
 
 export default function LivingExpensesScreen() {
   const router = useRouter();
@@ -71,17 +73,17 @@ export default function LivingExpensesScreen() {
       setter: setFoodExpenses,
     },
     {
-      label: "Education supplies expenses (including monthly private school fees)",
+      label: "Education supplies expenses\n(including monthly private school fees)",
       state: educationExpenses,
       setter: setEducationExpenses,
     },
     {
-      label: "Healthcare expenses (monthly)",
+      label: "Healthcare expenses (Monthly)",
       state: healthcareExpenses,
       setter: setHealthcareExpenses,
     },
     {
-      label: "Transport expenses (monthly)",
+      label: "Transport expenses (Monthly)",
       state: transportExpenses,
       setter: setTransportExpenses,
     },
@@ -91,17 +93,17 @@ export default function LivingExpensesScreen() {
       setter: setInsuranceExpenses,
     },
     {
-      label: "Monthly Rent (If renting)",
+      label: "Monthly Rent (if renting)",
       state: rentExpenses,
       setter: setRentExpenses,
     },
     {
-      label: "Househelp wage (monthly)",
+      label: "Househelp wage (Monthly)",
       state: househelpExpenses,
       setter: setHousehelpExpenses,
     },
     {
-      label: "Expat dependent gov. fees (monthly)",
+      label: "Expat dependent gov. fees (Monthly)",
       state: expatFees,
       setter: setExpatFees,
     },
@@ -124,25 +126,19 @@ export default function LivingExpensesScreen() {
       style={{ flex: 1 }}
     >
       <View style={styles.container}>
-        <StatusBar style="light" />
-
-        {/* Global Background Gradient */}
-        <LinearGradient
-          colors={[BACKGROUND, "#0f172a", BACKGROUND]}
-          style={StyleSheet.absoluteFill}
-        />
+        <StatusBar style="dark" />
 
         <SafeAreaView style={{ flex: 1 }}>
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={24} color="#fff" />
+              <Ionicons name="arrow-back" size={24} color={TEXT_MAIN} />
             </TouchableOpacity>
             <View style={styles.headerLogo}>
-              <Ionicons name="flash" size={20} color={PRIMARY} />
-              <Text style={styles.headerBrand}>
-                EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text>
-              </Text>
+              <Image 
+                source={require('../assets/images/logo.png')} 
+                style={{ width: 140, height: 40, resizeMode: 'contain' }} 
+              />
             </View>
             <View style={{ width: 44 }} />
           </View>
@@ -152,18 +148,17 @@ export default function LivingExpensesScreen() {
             showsVerticalScrollIndicator={false}
           >
             <Animated.View entering={FadeInDown.duration(600).delay(100)}>
-              <Text style={styles.pageTitle}>Living Expenses</Text>
-              <Text style={styles.pageSubtitle}>& Obligations</Text>
+              <Text style={styles.pageTitle}>Living Expenses & Obligations</Text>
 
               {/* Progress Section */}
               <View style={styles.progressContainer}>
                 <View style={styles.progressHeader}>
                   <Text style={styles.progressPercentage}>30% Completed</Text>
-                  <Text style={styles.progressSteps}>Step 3 of 6</Text>
+                  <Text style={styles.progressSteps}>3 out of 6 completed</Text>
                 </View>
                 <View style={styles.progressBarBg}>
                   <LinearGradient
-                    colors={[SECONDARY, "#ca8a04"]}
+                    colors={["#2E8B57", "#34d399"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={[styles.progressFill, { width: "30%" }]}
@@ -179,14 +174,14 @@ export default function LivingExpensesScreen() {
               {fields.map((field, idx) => (
                 <View key={idx} style={styles.inputWrapper}>
                   <Text style={styles.inputLabel}>{field.label}</Text>
-                  <View style={styles.currencyInputContainer}>
+                  <View style={[styles.currencyInputContainer, parseFloat(field.state) > 0 && styles.currencyInputContainerActive]}>
                     <TextInput
                       style={styles.textInput}
                       value={field.state}
                       onChangeText={field.setter}
                       keyboardType="numeric"
                       placeholder="0.00"
-                      placeholderTextColor="#64748b"
+                      placeholderTextColor="#94a3b8"
                     />
                     <Text style={styles.currencyLabel}>SAR</Text>
                   </View>
@@ -200,21 +195,8 @@ export default function LivingExpensesScreen() {
             entering={FadeInDown.duration(600).delay(300)}
             style={styles.footer}
           >
-            <TouchableOpacity activeOpacity={0.8} onPress={() => router.push("/employment-data")}>
-              <LinearGradient
-                colors={[SECONDARY, "#ca8a04"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.nextBtn}
-              >
-                <Text style={styles.nextBtnText}>Next</Text>
-                <Ionicons
-                  name="arrow-forward"
-                  size={20}
-                  color="#fff"
-                  style={{ marginLeft: 8 }}
-                />
-              </LinearGradient>
+            <TouchableOpacity style={styles.nextBtn} activeOpacity={0.8} onPress={() => router.push("/employment-data")}>
+              <Text style={styles.nextBtnText}>Next</Text>
             </TouchableOpacity>
           </Animated.View>
         </SafeAreaView>
@@ -224,124 +206,101 @@ export default function LivingExpensesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: BACKGROUND },
+  container: { flex: 1, backgroundColor: WHITE },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 10,
-    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'android' ? 40 : 20,
+    paddingBottom: 15,
   },
   backBtn: {
     width: 44,
     height: 44,
-    borderRadius: 14,
-    backgroundColor: GLASS,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
-  headerLogo: { flexDirection: "row", alignItems: "center", gap: 6 },
-  headerBrand: {
-    fontSize: 17,
-    fontWeight: "900",
-    color: "#fff",
-    letterSpacing: -0.5,
-  },
+  headerLogo: { flex: 1, alignItems: "center" },
 
   scrollContent: {
     padding: 24,
-    paddingBottom: 130,
+    paddingBottom: 130, // Space for footer
   },
   pageTitle: {
-    color: "#fff",
-    fontSize: 28,
-    fontWeight: "900",
+    color: TEXT_MAIN,
+    fontSize: 18,
+    fontWeight: "800",
     textAlign: "center",
-    marginTop: 10,
-    letterSpacing: -0.5,
-  },
-  pageSubtitle: {
-    color: SECONDARY,
-    fontSize: 14,
-    fontWeight: "700",
-    textAlign: "center",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginTop: 4,
-    marginBottom: 35,
+    marginBottom: 30,
   },
 
   progressContainer: {
-    backgroundColor: "rgba(17, 24, 39, 0.4)",
-    padding: 20,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: GLASS,
-    marginBottom: 40,
+    marginBottom: 30,
   },
   progressHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginBottom: 12,
+    alignItems: "baseline",
+    marginBottom: 10,
   },
   progressPercentage: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "800",
+    color: TEXT_MAIN,
+    fontSize: 15,
+    fontWeight: "600",
   },
   progressSteps: {
-    color: "#94a3b8",
-    fontSize: 13,
-    fontWeight: "700",
+    color: "#cbd5e1",
+    fontSize: 12,
+    fontWeight: "500",
   },
   progressBarBg: {
-    height: 8,
-    backgroundColor: "rgba(255,255,255,0.05)",
-    borderRadius: 4,
+    height: 6,
+    backgroundColor: "#e2e8f0",
+    borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    borderRadius: 4,
+    borderRadius: 3,
   },
 
   formSection: {
-    gap: 24,
+    gap: 20,
   },
   inputWrapper: {
     gap: 8,
   },
   inputLabel: {
-    color: "#cbd5e1",
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
+    color: TEXT_MAIN,
+    fontSize: 13,
+    fontWeight: "600",
+    lineHeight: 18,
   },
   currencyInputContainer: {
-    backgroundColor: "rgba(17, 24, 39, 0.6)",
-    borderWidth: 1.5,
-    borderColor: GLASS,
-    borderRadius: 16,
-    paddingHorizontal: 18,
-    height: 56,
+    backgroundColor: WHITE,
+    borderWidth: 1,
+    borderColor: BORDER_COLOR,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 52,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
+  currencyInputContainerActive: {
+    borderColor: PRIMARY, // Focus or active state based on Figma screenshot
+  },
   textInput: {
     flex: 1,
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    color: TEXT_MAIN,
+    fontSize: 14,
+    fontWeight: "400",
   },
   currencyLabel: {
-    color: SECONDARY,
-    fontSize: 15,
-    fontWeight: "800",
+    color: TEXT_SECONDARY,
+    fontSize: 14,
+    fontWeight: "500",
     marginLeft: 10,
   },
 
@@ -352,25 +311,18 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 24,
     paddingBottom: 34,
-    backgroundColor: BACKGROUND,
-    borderTopWidth: 1,
-    borderTopColor: GLASS,
+    backgroundColor: WHITE,
   },
   nextBtn: {
-    flexDirection: "row",
+    backgroundColor: PRIMARY,
     paddingVertical: 18,
-    borderRadius: 16,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 8,
   },
   nextBtnText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "900",
+    color: WHITE,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

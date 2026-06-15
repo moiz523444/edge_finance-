@@ -8,21 +8,23 @@ import {
   ScrollView,
   Dimensions,
   ActivityIndicator,
-  Alert
+  Alert,
+  Image,
+  Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { LinearGradient } from "expo-linear-gradient";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { apiService } from "../services/api";
 
 const { width } = Dimensions.get("window");
-const PRIMARY = "#10b981"; // Emerald
-const SECONDARY = "#eab308"; // Gold/Orange Theme
-const BACKGROUND = "#0a0a0f";
-const CARD_BG = "#111827";
-const GLASS = "rgba(255,255,255,0.07)";
+const PRIMARY = "#2E8B57"; // Green theme matching Figma
+const BACKGROUND = "#f8fafc";
+const WHITE = "#ffffff";
+const TEXT_MAIN = "#1f2937";
+const TEXT_SECONDARY = "#94a3b8";
+const INACTIVE_CARD = "#f1f5f9";
 
 export default function PersonalFinanceScreen() {
   const router = useRouter();
@@ -51,14 +53,12 @@ export default function PersonalFinanceScreen() {
   const fetchProductDetails = async () => {
     try {
       setIsLoading(true);
-      // Hardcoded ID number matching the JSON mock/doc requirement
       const idNumber = "1023321548";
       const productCode = "TWQ";
       const response = await apiService.loan.getProductDetails(idNumber, productCode);
       
       if (response.SUCCEEDED && response.DATA) {
         let dataObj: any = response.DATA;
-        // The API might return an array wrapper as per docs
         if (Array.isArray(dataObj)) {
           dataObj = dataObj[0];
         }
@@ -67,7 +67,8 @@ export default function PersonalFinanceScreen() {
         if (details) {
           setProductDetails({
             title: details.PRODUCTTITLE || "Microfinance",
-            desc: details.PRODUCTDETAILS || "Get Finance upto 50,000 SAR with instant approval",
+            desc: details.PRODUCTDETAILS || "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+            amount: "25,000",
             benefits: parseList(details.BENEFITS, false),
             requirements: parseList(details.REQUIREMENTS, true),
           });
@@ -87,44 +88,35 @@ export default function PersonalFinanceScreen() {
     }
   };
 
-  const defaultBenefits = ["Get Instant Approval", "Best Rates Available", "Repayment Period up to 36 months"];
-  const defaultRequirements = ["Minimum age 18 years", "Salaried Government Or Private Organization Employee", "Minimum Salary 4,000 SAR"];
+  const defaultBenefits = ["Get Instant Approval Best Rates*", "Repayment Period up to 36 months"];
+  const defaultRequirements = ["* Minimum age 18 years", "* Salaried", "Government Or Private Organization Employee", "* Minimum Salary 4,000"];
 
   const displayBenefits = productDetails?.benefits?.length ? productDetails.benefits : defaultBenefits;
   const displayRequirements = productDetails?.requirements?.length ? productDetails.requirements : defaultRequirements;
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
-
-      {/* Global Background Gradient */}
-      <LinearGradient
-        colors={[BACKGROUND, "#0f172a", BACKGROUND]}
-        style={StyleSheet.absoluteFill}
-      />
+      <StatusBar style="dark" />
 
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#fff" />
+          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color={TEXT_MAIN} />
           </TouchableOpacity>
           <View style={styles.headerLogo}>
-            <Ionicons name="flash" size={20} color={PRIMARY} />
-            <Text style={styles.headerBrand}>
-              EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text>
-            </Text>
+            <Image 
+              source={require('../assets/images/logo.png')} 
+              style={{ width: 140, height: 40, resizeMode: 'contain' }} 
+            />
           </View>
-          <View style={{ width: 40 }} />
+          <View style={{ width: 44 }} />
         </View>
 
         {isLoading ? (
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="large" color={SECONDARY} />
-            <Text style={{ color: "#94a3b8", marginTop: 16 }}>Loading Product Offers...</Text>
+            <ActivityIndicator size="large" color={PRIMARY} />
+            <Text style={{ color: TEXT_SECONDARY, marginTop: 16 }}>Loading Product Offers...</Text>
           </View>
         ) : (
           <>
@@ -133,8 +125,7 @@ export default function PersonalFinanceScreen() {
                 <Text style={styles.applyForText}>Apply For</Text>
                 <Text style={styles.titleText}>Personal Finance</Text>
                 <Text style={styles.subtitleText}>
-                  Start your personal finance application and check your eligible
-                  offer instantly
+                  Start your personal finance application and check your eligible offer
                 </Text>
               </Animated.View>
 
@@ -145,24 +136,19 @@ export default function PersonalFinanceScreen() {
                   onPress={() => setSelectedType("microfinance")}
                   activeOpacity={0.8}
                 >
-                  <LinearGradient
-                    colors={selectedType === "microfinance" ? [SECONDARY, "#ca8a04"] : [CARD_BG, CARD_BG]}
-                    style={[
-                      styles.typeCard,
-                      selectedType === "microfinance" ? styles.typeCardActive : styles.typeCardInactive,
-                    ]}
-                  >
-                    <View style={[styles.typeIconCircle, selectedType === "microfinance" && { backgroundColor: "rgba(255,255,255,0.2)" }]}>
+                  <View style={[styles.typeCard, selectedType === "microfinance" ? styles.typeCardActive : styles.typeCardInactive]}>
+                    {selectedType === "microfinance" && <View style={styles.diagonalShadow} />}
+                    <View style={[styles.typeIconCircle, selectedType === "microfinance" ? styles.iconCircleActive : styles.iconCircleInactive]}>
                       <Ionicons
-                        name="business-outline"
+                        name="library-outline"
                         size={32}
-                        color={selectedType === "microfinance" ? "#fff" : SECONDARY}
+                        color={selectedType === "microfinance" ? PRIMARY : PRIMARY}
                       />
                     </View>
-                    <Text style={[styles.typeLabel, selectedType === "microfinance" ? { color: "#fff" } : { color: "#94a3b8" }]}>
+                    <Text style={[styles.typeLabel, selectedType === "microfinance" ? { color: WHITE } : { color: PRIMARY }]}>
                       Microfinance
                     </Text>
-                  </LinearGradient>
+                  </View>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -170,53 +156,44 @@ export default function PersonalFinanceScreen() {
                   onPress={() => setSelectedType("topup")}
                   activeOpacity={0.8}
                 >
-                  <LinearGradient
-                    colors={selectedType === "topup" ? [SECONDARY, "#ca8a04"] : [CARD_BG, CARD_BG]}
-                    style={[
-                      styles.typeCard,
-                      selectedType === "topup" ? styles.typeCardActive : styles.typeCardInactive,
-                    ]}
-                  >
-                    <View style={[styles.typeIconCircle, selectedType === "topup" && { backgroundColor: "rgba(255,255,255,0.2)" }]}>
+                  <View style={[styles.typeCard, selectedType === "topup" ? styles.typeCardActive : styles.typeCardInactive]}>
+                    {selectedType === "topup" && <View style={styles.diagonalShadow} />}
+                    <View style={[styles.typeIconCircle, selectedType === "topup" ? styles.iconCircleActive : styles.iconCircleInactive]}>
                       <Ionicons
                         name="wallet-outline"
                         size={32}
-                        color={selectedType === "topup" ? "#fff" : SECONDARY}
+                        color={selectedType === "topup" ? PRIMARY : PRIMARY}
                       />
                     </View>
-                    <Text style={[styles.typeLabel, selectedType === "topup" ? { color: "#fff" } : { color: "#94a3b8" }]}>
+                    <Text style={[styles.typeLabel, selectedType === "topup" ? { color: WHITE } : { color: PRIMARY }]}>
                       Topup
                     </Text>
-                  </LinearGradient>
+                  </View>
                 </TouchableOpacity>
               </Animated.View>
 
-              {/* Conditional Content based on Selection */}
+              {/* Conditional Content */}
               {selectedType === "microfinance" ? (
                 <>
-                  {/* Offer Details */}
                   <Animated.View entering={FadeInDown.duration(600).delay(300)}>
-                    <LinearGradient
-                      colors={["rgba(30, 41, 59, 0.8)", "rgba(15, 23, 42, 0.8)"]}
-                      style={styles.detailsCard}
-                    >
-                      <View style={styles.detailsCardGlow} />
-                      <Text style={styles.detailsTitle}>{productDetails?.title || "Microfinance"}</Text>
-                      <Text style={styles.detailsDesc}>
-                        {productDetails?.desc || "Get Finance with instant approval. Tailored to meet your immediate needs."}
+                    <View style={styles.offerCard}>
+                      <Text style={styles.offerTitle}>{productDetails?.title || "Microfinance"}</Text>
+                      <View style={styles.offerAmountRow}>
+                        <Text style={styles.offerUpTo}>Up to</Text>
+                        <Text style={styles.offerAmountVal}> SAR {productDetails?.amount || "25,000"}</Text>
+                      </View>
+                      <Text style={styles.offerDesc}>
+                        {productDetails?.desc || "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
                       </Text>
-                    </LinearGradient>
+                    </View>
                   </Animated.View>
 
                   {/* Benefits */}
                   <Animated.View entering={FadeInRight.duration(600).delay(400)} style={styles.section}>
                     <Text style={styles.sectionTitle}>Benefits</Text>
-                    <View style={styles.bulletList}>
+                    <View style={styles.textContent}>
                       {displayBenefits.map((item: string, index: number) => (
-                        <View key={index} style={styles.bulletItem}>
-                          <Ionicons name="checkmark-circle" size={20} color={SECONDARY} style={styles.bulletIcon} />
-                          <Text style={styles.bulletText}>{item}</Text>
-                        </View>
+                        <Text key={index} style={styles.listText}>{item}</Text>
                       ))}
                     </View>
                   </Animated.View>
@@ -224,43 +201,31 @@ export default function PersonalFinanceScreen() {
                   {/* Requirements */}
                   <Animated.View entering={FadeInRight.duration(600).delay(500)} style={styles.section}>
                     <Text style={styles.sectionTitle}>Requirements</Text>
-                    <View style={styles.bulletList}>
+                    <View style={styles.textContent}>
                       {displayRequirements.map((item: string, index: number) => (
-                        <View key={index} style={styles.bulletItem}>
-                          <Ionicons name="shield-checkmark" size={20} color={PRIMARY} style={styles.bulletIcon} />
-                          <Text style={styles.bulletText}>{item}</Text>
-                        </View>
+                        <Text key={index} style={styles.listText}>{item}</Text>
                       ))}
                     </View>
                   </Animated.View>
                 </>
               ) : (
-                <Animated.View entering={FadeInDown.duration(400)} style={styles.comingSoonCard}>
-                  <Ionicons name="construct-outline" size={48} color={SECONDARY} style={{ marginBottom: 16 }} />
-                  <Text style={styles.comingSoonTitle}>Topup Screen</Text>
-                  <Text style={styles.comingSoonDesc}>
+                <Animated.View entering={FadeInDown.duration(400)} style={styles.offerCard}>
+                  <Text style={styles.offerTitle}>Topup</Text>
+                  <Text style={styles.offerDesc}>
                     The Topup application flow is separate and will be available soon.
                   </Text>
                 </Animated.View>
               )}
             </ScrollView>
 
-            {/* Footer Action - Only show for Microfinance for now */}
             {selectedType === "microfinance" && (
               <Animated.View entering={FadeInDown.duration(600).delay(600)} style={styles.footer}>
                 <TouchableOpacity 
+                  style={styles.applyBtn}
                   onPress={() => router.push("/pep")}
                   activeOpacity={0.8}
                 >
-                  <LinearGradient
-                    colors={[SECONDARY, "#ca8a04"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.applyBtn}
-                  >
-                    <Text style={styles.applyBtnText}>Apply Now</Text>
-                    <Ionicons name="arrow-forward" size={20} color="#fff" style={{ marginLeft: 8 }} />
-                  </LinearGradient>
+                  <Text style={styles.applyBtnText}>Apply Now</Text>
                 </TouchableOpacity>
               </Animated.View>
             )}
@@ -277,199 +242,161 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'android' ? 40 : 20,
+    paddingBottom: 15,
   },
   backBtn: {
     width: 44,
     height: 44,
-    borderRadius: 14,
-    backgroundColor: GLASS,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
-  headerLogo: { flexDirection: "row", alignItems: "center", gap: 6 },
-  headerBrand: {
-    fontSize: 17,
-    fontWeight: "900",
-    color: "#fff",
-    letterSpacing: -0.5,
-  },
+  headerLogo: { flex: 1, alignItems: "center" },
 
   scrollContent: {
     padding: 24,
-    paddingBottom: 130, // Space for absolute footer
+    paddingBottom: 130,
   },
   titleContainer: {
     alignItems: "center",
-    marginBottom: 40,
-    marginTop: 10,
+    marginBottom: 35,
+    marginTop: 5,
   },
   applyForText: {
-    color: SECONDARY,
+    color: PRIMARY,
     fontSize: 14,
-    fontWeight: "800",
-    textTransform: "uppercase",
-    letterSpacing: 1.5,
-    marginBottom: 10,
+    fontWeight: "700",
+    marginBottom: 6,
   },
   titleText: {
-    color: "#fff",
-    fontSize: 32,
-    fontWeight: "900",
-    marginBottom: 14,
-    letterSpacing: -0.5,
+    color: TEXT_MAIN,
+    fontSize: 24,
+    fontWeight: "800",
+    marginBottom: 10,
   },
   subtitleText: {
-    color: "#94a3b8",
-    fontSize: 15,
+    color: TEXT_SECONDARY,
+    fontSize: 13,
     textAlign: "center",
-    lineHeight: 24,
-    paddingHorizontal: 20,
+    lineHeight: 20,
+    paddingHorizontal: 30,
   },
 
   typeRow: {
     flexDirection: "row",
     gap: 16,
-    marginBottom: 35,
+    marginBottom: 30,
   },
   typeCard: {
-    borderRadius: 24,
+    flex: 1,
+    borderRadius: 20,
     padding: 24,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1.5,
+    height: 160,
+    overflow: 'hidden',
   },
   typeCardInactive: {
-    borderColor: GLASS,
+    backgroundColor: INACTIVE_CARD,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   typeCardActive: {
-    borderColor: SECONDARY,
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 10,
+    backgroundColor: PRIMARY,
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  diagonalShadow: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    backgroundColor: '#1f663e',
+    opacity: 0.5,
+    transform: [{ rotate: '-45deg' }],
+    bottom: -100,
+    right: -50,
   },
   typeIconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: "rgba(255,255,255,0.03)",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
+    zIndex: 2,
+  },
+  iconCircleInactive: {
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: PRIMARY,
+  },
+  iconCircleActive: {
+    backgroundColor: WHITE,
   },
   typeLabel: {
-    fontSize: 16,
-    fontWeight: "800",
+    fontSize: 14,
+    fontWeight: "700",
+    zIndex: 2,
   },
 
-  detailsCard: {
-    borderRadius: 24,
-    padding: 28,
-    borderWidth: 1,
-    borderColor: GLASS,
-    marginBottom: 35,
-    position: "relative",
-    overflow: "hidden",
+  offerCard: {
+    backgroundColor: WHITE,
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
   },
-  detailsCardGlow: {
-    position: "absolute",
-    top: -50,
-    right: -50,
-    width: 150,
-    height: 150,
-    backgroundColor: SECONDARY,
-    borderRadius: 75,
-    opacity: 0.1,
-  },
-  detailsTitle: {
-    color: SECONDARY,
+  offerTitle: {
+    color: PRIMARY,
     fontSize: 16,
-    fontWeight: "800",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 10,
+    fontWeight: "700",
+    marginBottom: 8,
   },
-  amountRow: {
+  offerAmountRow: {
     flexDirection: "row",
     alignItems: "baseline",
-    marginBottom: 16,
+    marginBottom: 12,
   },
-  amountLabel: {
-    color: "#94a3b8",
-    fontSize: 16,
+  offerUpTo: {
+    color: TEXT_SECONDARY,
+    fontSize: 14,
+    fontWeight: "500",
   },
-  amountValue: {
-    color: "#fff",
-    fontSize: 28,
-    fontWeight: "900",
-    letterSpacing: -0.5,
+  offerAmountVal: {
+    color: TEXT_MAIN,
+    fontSize: 20,
+    fontWeight: "800",
   },
-  detailsDesc: {
-    color: "#cbd5e1",
-    fontSize: 14.5,
-    lineHeight: 24,
+  offerDesc: {
+    color: "#a1a1aa",
+    fontSize: 12,
+    lineHeight: 18,
   },
 
   section: {
-    marginBottom: 35,
-    backgroundColor: "rgba(17, 24, 39, 0.4)",
-    padding: 24,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: GLASS,
+    marginBottom: 24,
   },
   sectionTitle: {
-    color: "#fff",
-    fontSize: 19,
-    fontWeight: "900",
-    marginBottom: 20,
+    color: TEXT_MAIN,
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 12,
   },
-  
-  comingSoonCard: {
-    backgroundColor: CARD_BG,
-    padding: 40,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: GLASS,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
+  textContent: {
+    gap: 6,
   },
-  comingSoonTitle: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "900",
-    marginBottom: 10,
-  },
-  comingSoonDesc: {
-    color: "#94a3b8",
-    fontSize: 15,
-    textAlign: "center",
-    lineHeight: 24,
-  },
-
-  bulletList: {
-    gap: 16,
-  },
-  bulletItem: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  bulletIcon: {
-    marginRight: 14,
-  },
-  bulletText: {
-    color: "#e2e8f0",
-    fontSize: 15,
-    flex: 1,
-    lineHeight: 22,
-    fontWeight: "500",
+  listText: {
+    color: "#52525b",
+    fontSize: 13,
+    lineHeight: 20,
   },
 
   footer: {
@@ -478,26 +405,18 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 24,
-    paddingBottom: 34,
     backgroundColor: BACKGROUND,
-    borderTopWidth: 1,
-    borderTopColor: GLASS,
   },
   applyBtn: {
-    flexDirection: "row",
+    backgroundColor: PRIMARY,
     paddingVertical: 18,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 8,
   },
   applyBtnText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "900",
+    color: WHITE,
+    fontSize: 16,
+    fontWeight: "700",
   },
 });
