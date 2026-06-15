@@ -12,6 +12,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
 } from "react-native";
 import Animated, {
   FadeIn,
@@ -36,7 +37,7 @@ const GLASS = "rgba(255,255,255,0.07)";
 export default function OnboardingScreen() {
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [selectedLanguage, setSelectedLanguage] = useState<"en" | "ar">("en");
+  const [selectedLanguage, setSelectedLanguage] = useState<"en" | "ar" | null>(null);
 
   const shine = useSharedValue(0);
 
@@ -62,16 +63,11 @@ export default function OnboardingScreen() {
 
   const LogoHeader = () => (
     <Animated.View entering={FadeInDown.duration(1000)} style={styles.header}>
-      <LinearGradient
-        colors={[PRIMARY + "25", SECONDARY + "15"]}
-        style={styles.logoBadge}
-      >
-        <Ionicons name="flash" size={44} color="#fff" />
-      </LinearGradient>
-      <Text style={styles.brandName}>
-        EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text>
-      </Text>
-      <Text style={styles.tagline}>PREMIUM • SECURE • INSTANT</Text>
+      <Image 
+        source={require('../assets/images/logo.png')} 
+        style={styles.logoImage} 
+        resizeMode="contain" 
+      />
     </Animated.View>
   );
 
@@ -79,61 +75,64 @@ export default function OnboardingScreen() {
     <Animated.View
       entering={FadeIn}
       exiting={SlideOutLeft}
-      style={styles.stepContainer}
+      style={[styles.stepContainer, { paddingHorizontal: 0, backgroundColor: '#ffffff', justifyContent: 'flex-start' }]}
     >
-      <LogoHeader />
+      <View style={styles.topSection}>
+        <LogoHeader />
 
-      <View style={styles.contentSection}>
-        <Text style={styles.mainTitle}>Choose Language</Text>
+        <View style={[styles.contentSection, { marginTop: isSmallDevice ? 30 : 50 }]}>
+          <Text style={styles.mainTitleLight}>Select Language</Text>
 
-        <View style={styles.langList}>
-          {(["en", "ar"] as const).map((lang) => (
-            <TouchableOpacity
-              key={lang}
-              style={[
-                styles.langCard,
-                selectedLanguage === lang && styles.langCardActive,
-              ]}
-              onPress={() => setSelectedLanguage(lang)}
-            >
-              <Text
+          <View style={styles.langListLight}>
+            {(["en", "ar"] as const).map((lang) => (
+              <TouchableOpacity
+                key={lang}
                 style={[
-                  styles.langLabel,
-                  selectedLanguage === lang && styles.langLabelActive,
+                  styles.langBtnLight,
+                  selectedLanguage === lang ? styles.langBtnActiveLight : styles.langBtnInactiveLight,
                 ]}
+                onPress={() => setSelectedLanguage(lang)}
               >
-                {lang === "en" ? "English" : "العربية"}
-              </Text>
-              <View
-                style={[
-                  styles.radio,
-                  selectedLanguage === lang && { borderColor: SECONDARY },
-                ]}
-              >
-                {selectedLanguage === lang && (
-                  <View style={[styles.radioInner, { backgroundColor: SECONDARY }]} />
-                )}
-              </View>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.langTextLight,
+                    selectedLanguage === lang ? styles.langTextActiveLight : styles.langTextInactiveLight,
+                  ]}
+                >
+                  {lang === "en" ? "English" : "العربيه"}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.actionSectionLight}>
+          <TouchableOpacity
+            style={selectedLanguage ? styles.filledBtnLight : styles.outlineBtnLight}
+            onPress={() => {
+              if (selectedLanguage) nextStep();
+            }}
+            activeOpacity={0.8}
+          >
+            <Text style={selectedLanguage ? styles.filledBtnTextLight : styles.outlineBtnTextLight}>
+              Let's Get Started Now
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
-
-      <TouchableOpacity
-        style={styles.primaryBtn}
-        onPress={nextStep}
-        activeOpacity={0.9}
-      >
-        <LinearGradient
-          colors={[SECONDARY, "#facc15", SECONDARY]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradientBtn}
-        >
-          <Text style={styles.primaryBtnText}>Get Started</Text>
-          <Ionicons name="arrow-forward" size={24} color="#0a0a0f" />
-        </LinearGradient>
-      </TouchableOpacity>
+      
+      <View pointerEvents="none" style={styles.footerPatternContainer}>
+        <Image 
+          source={require('../assets/images/footer.png')} 
+          style={styles.footerPattern} 
+          resizeMode="cover" 
+        />
+        <Image 
+          source={require('../assets/images/fotter1.png')} 
+          style={styles.footerGradient} 
+          resizeMode="cover" 
+        />
+      </View>
     </Animated.View>
   );
 
@@ -141,41 +140,33 @@ export default function OnboardingScreen() {
     <Animated.View
       entering={SlideInRight}
       exiting={SlideOutLeft}
-      style={styles.stepContainer}
+      style={[styles.stepContainer, { paddingHorizontal: 24, justifyContent: 'flex-start' }]}
     >
-      <LogoHeader />
-
-      <View style={styles.illustrationWrap}>
-        <Animated.View
-          entering={ZoomIn.delay(300)}
-          style={[styles.glowCircle, { backgroundColor: SECONDARY }]}
+      <View style={{ width: '100%', alignItems: 'center' }}>
+        <LogoHeader />
+        <Image 
+          source={require('../assets/images/ongoing.png')} 
+          style={{ width: isSmallDevice ? 220 : 280, height: isSmallDevice ? 220 : 280, resizeMode: 'contain', marginBottom: isSmallDevice ? 20 : 30, marginTop: isSmallDevice ? 10 : 20 }} 
         />
-        <View style={[styles.iconBox, { borderColor: SECONDARY + "40" }]}>
-          <Ionicons name="shield-checkmark" size={isSmallDevice ? 80 : 120} color={SECONDARY} />
+
+        <Text style={[styles.mainTitleLight, { marginBottom: 16 }]}>Fast & Secure</Text>
+        <Text style={[styles.stepSub, { color: '#6B7280', paddingHorizontal: 20 }]}>
+          Don't worry about 3rd Party Hacks. It is fast and secure
+        </Text>
+
+        <View style={[styles.pagination, { gap: 8, marginVertical: isSmallDevice ? 30 : 40 }]}>
+          <View style={[styles.dotLight, styles.activeDotLight]} />
+          <View style={styles.dotLight} />
+          <View style={styles.dotLight} />
+          <View style={styles.dotLight} />
         </View>
-      </View>
 
-      <View style={styles.textWrap}>
-        <Text style={[styles.stepHeader, { color: SECONDARY }]}>
-          Military Grade Security
-        </Text>
-        <Text style={styles.stepSub}>
-          End-to-end encryption • Biometric protection • Your assets are
-          untouchable.
-        </Text>
-      </View>
-
-      <View style={styles.pagination}>
-        <View style={[styles.dot, styles.activeDotSecondary]} />
-        <View style={styles.dot} />
-      </View>
-
-      <View style={styles.footerRow}>
-        <TouchableOpacity onPress={skip}>
-          <Text style={styles.skipText}>Skip</Text>
+        <TouchableOpacity style={styles.outlineBtnLight} onPress={nextStep}>
+          <Text style={styles.outlineBtnTextLight}>Next</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.primaryBtnSmall, { backgroundColor: SECONDARY }]} onPress={nextStep}>
-          <Text style={styles.primaryBtnTextSmall}>Next</Text>
+
+        <TouchableOpacity onPress={skip} style={{ marginTop: 24, padding: 10 }}>
+          <Text style={{ color: '#2E8B57', fontSize: 16, fontWeight: '500' }}>Skip</Text>
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -185,50 +176,28 @@ export default function OnboardingScreen() {
     <Animated.View
       entering={SlideInRight}
       exiting={SlideOutLeft}
-      style={styles.stepContainer}
+      style={[styles.stepContainer, { paddingHorizontal: 24, justifyContent: 'flex-start' }]}
     >
-      <LogoHeader />
-
-      <View style={styles.illustrationWrap}>
-        <Animated.View
-          entering={ZoomIn.delay(300)}
-          style={[styles.glowCircle, { backgroundColor: SECONDARY }]}
+      <View style={{ width: '100%', alignItems: 'center' }}>
+        <LogoHeader />
+        <Image 
+          source={require('../assets/images/video_player.png')} 
+          style={{ width: isSmallDevice ? 250 : 320, height: isSmallDevice ? 180 : 240, resizeMode: 'contain', marginBottom: isSmallDevice ? 30 : 50, marginTop: isSmallDevice ? 10 : 20 }} 
         />
-        <View style={[styles.iconBox, { borderColor: SECONDARY + "40" }]}>
-          <View style={[styles.playBtn, { backgroundColor: SECONDARY + "20" }]}>
-            <Ionicons name="play" size={isSmallDevice ? 40 : 58} color={SECONDARY} />
-          </View>
-        </View>
-      </View>
 
-      <View style={styles.textWrap}>
-        <Text style={[styles.stepHeader, { color: SECONDARY }]}>
-          Master in 45 Seconds
+        <Text style={[styles.mainTitleLight, { color: '#111827', marginBottom: 16 }]}>Watch Tutorial</Text>
+        <Text style={[styles.stepSub, { color: '#6B7280', paddingHorizontal: 20, marginBottom: isSmallDevice ? 40 : 60 }]}>
+          If you are new on this and need help, watch this short tutorial clip to get started.
         </Text>
-        <Text style={styles.stepSub}>
-          Watch this quick tutorial and unlock the full power of Edge Finance.
-        </Text>
-      </View>
 
-      <View style={styles.pagination}>
-        <View style={styles.dot} />
-        <View style={[styles.dot, styles.activeDotSecondary]} />
-      </View>
-
-      <View style={styles.footerCol}>
-        <TouchableOpacity style={styles.goldBtn} onPress={nextStep}>
-          <LinearGradient
-            colors={[SECONDARY, "#facc15"]}
-            style={styles.gradientBtn}
-          >
-            <Text style={styles.goldBtnText}>Create My Account</Text>
-          </LinearGradient>
+        <TouchableOpacity style={styles.filledBtnLight} onPress={nextStep}>
+          <Text style={styles.filledBtnTextLight}>Let's Create an account</Text>
         </TouchableOpacity>
 
-        <View style={styles.bottomLinkRow}>
-          <Text style={styles.bottomLinkText}>Already have an account? </Text>
+        <View style={[styles.bottomLinkRow, { marginTop: 30, alignItems: 'center' }]}>
+          <Text style={styles.bottomLinkTextLight}>Already have an account? - </Text>
           <TouchableOpacity onPress={() => router.push("/login")}>
-            <Text style={styles.signInLink}>Sign In</Text>
+            <Text style={styles.signInLinkLight}>Sign In</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -236,14 +205,8 @@ export default function OnboardingScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-
-      {/* Background Gradient Overlay */}
-      <LinearGradient
-        colors={[BACKGROUND, "#0f172a", BACKGROUND]}
-        style={StyleSheet.absoluteFill}
-      />
+    <View style={[styles.container, { backgroundColor: '#ffffff' }]}>
+      <StatusBar style="dark" />
 
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView
@@ -251,7 +214,7 @@ export default function OnboardingScreen() {
           bounces={false}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.mainContent}>
+          <View style={[styles.mainContent, step === 0 && { paddingHorizontal: 0 }]}>
             {step === 0 && renderStep0()}
             {step === 1 && renderStep1()}
             {step === 2 && renderStep2()}
@@ -480,4 +443,119 @@ const styles = StyleSheet.create({
   bottomLinkRow: { flexDirection: "row", marginTop: isSmallDevice ? 18 : 32 },
   bottomLinkText: { color: "#94a3b8", fontSize: 16 },
   signInLink: { color: PRIMARY, fontSize: 16, fontWeight: "800" },
+
+  // New Light Mode Styles for Step 0
+  logoImage: {
+    width: 200,
+    height: 80,
+    marginTop: 20,
+  },
+  topSection: {
+    flex: 1,
+    width: "100%",
+    paddingHorizontal: 24,
+    alignItems: "center",
+    zIndex: 10,
+  },
+  mainTitleLight: {
+    fontSize: isSmallDevice ? 22 : 26,
+    fontWeight: "600",
+    color: "#2E8B57",
+    textAlign: "center",
+    marginBottom: isSmallDevice ? 20 : 32,
+  },
+  langListLight: {
+    gap: isSmallDevice ? 12 : 16,
+    width: "100%",
+  },
+  langBtnLight: {
+    width: "100%",
+    height: isSmallDevice ? 50 : 60,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  langBtnActiveLight: {
+    backgroundColor: "#2E8B57",
+  },
+  langBtnInactiveLight: {
+    backgroundColor: "#F3F4F6",
+  },
+  langTextLight: {
+    fontSize: isSmallDevice ? 16 : 18,
+    fontWeight: "500",
+  },
+  langTextActiveLight: {
+    color: "#ffffff",
+  },
+  langTextInactiveLight: {
+    color: "#4B5563",
+  },
+  actionSectionLight: {
+    width: "100%",
+    marginTop: isSmallDevice ? 30 : 50,
+    gap: 16,
+  },
+  outlineBtnLight: {
+    width: "100%",
+    height: isSmallDevice ? 50 : 56,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: "#2E8B57",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+  },
+  outlineBtnTextLight: {
+    fontSize: isSmallDevice ? 15 : 16,
+    fontWeight: "600",
+    color: "#2E8B57",
+  },
+  filledBtnLight: {
+    width: "100%",
+    height: isSmallDevice ? 50 : 56,
+    borderRadius: 12,
+    backgroundColor: "#2E8B57",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  filledBtnTextLight: {
+    fontSize: isSmallDevice ? 15 : 16,
+    fontWeight: "600",
+    color: "#ffffff",
+  },
+  footerPatternContainer: {
+    width: "100%",
+    height: isSmallDevice ? 150 : 200,
+    position: "absolute",
+    bottom: 0,
+  },
+  footerPattern: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
+  footerGradient: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
+  dotLight: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#D1D5DB",
+  },
+  activeDotLight: {
+    backgroundColor: "#2E8B57",
+  },
+  bottomLinkTextLight: {
+    color: '#6B7280',
+    fontSize: 14,
+  },
+  signInLinkLight: {
+    color: '#2E8B57',
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });

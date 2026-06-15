@@ -16,6 +16,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -26,13 +27,14 @@ import Animated, {
 
 const { width } = Dimensions.get('window');
 
-const PRIMARY = '#10b981'; // Emerald
-const SECONDARY = '#eab308'; // Amber
-const BACKGROUND = '#0a0f1c';
-const CARD_BG = '#111827';
-const WHITE = '#FFFFFF';
-const TEXT_SECONDARY = '#94a3b8';
-const BORDER = 'rgba(255, 255, 255, 0.08)';
+const PRIMARY = '#2E8B57'; // Green
+const SECONDARY = '#2E8B57'; // Green
+const BACKGROUND = '#ffffff';
+const CARD_BG = '#ffffff';
+const WHITE = '#ffffff';
+const TEXT_MAIN = '#111827';
+const TEXT_SECONDARY = '#6B7280';
+const BORDER = '#D1D5DB';
 const ERROR = '#ef4444';
 
 export default function SignupScreen() {
@@ -238,7 +240,7 @@ export default function SignupScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: BACKGROUND }]}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
@@ -253,11 +255,10 @@ export default function SignupScreen() {
               entering={ZoomIn.duration(1000)}
               style={styles.logoSection}
             >
-              <View style={[styles.logoBadge, { backgroundColor: PRIMARY + '15' }]}>
-                <Ionicons name="flash" size={48} color={PRIMARY} />
-              </View>
-              <Text style={styles.brandName}>EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text></Text>
-              <Text style={styles.brandTagline}>Premium Financing Solutions</Text>
+              <Image 
+                source={require('../assets/images/logo.png')} 
+                style={{ width: 180, height: 70, resizeMode: 'contain', marginBottom: 20 }} 
+              />
             </Animated.View>
 
             <Animated.View
@@ -265,23 +266,18 @@ export default function SignupScreen() {
               entering={FadeInDown.duration(800).delay(300)}
               style={styles.formSection}
             >
-              <Text style={styles.welcomeText}>Create an Account</Text>
-              <Text style={styles.subText}>Join our premium financial network</Text>
+              <Text style={styles.welcomeText}>Create an account</Text>
+              <Text style={styles.subText}>Enter the Information below to get started</Text>
 
               {/* ID Number Field */}
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>ID NUMBER</Text>
                 <View style={[
                   styles.inputWrapper, 
-                  { 
-                    backgroundColor: CARD_BG, 
-                    borderColor: idTouched && idError ? ERROR : (idTouched && !idError ? PRIMARY : BORDER) 
-                  }
+                  { borderColor: idTouched && idError ? ERROR : (idNumber ? PRIMARY : BORDER) }
                 ]}>
-                  <Ionicons name="card-outline" size={20} color={idTouched && idError ? ERROR : PRIMARY} style={styles.inputIcon} />
                   <TextInput
-                    placeholder="Enter 10-digit ID"
-                    placeholderTextColor="rgba(255,255,255,0.3)"
+                    placeholder="ID Number"
+                    placeholderTextColor={TEXT_SECONDARY}
                     style={styles.input}
                     keyboardType="numeric"
                     maxLength={10}
@@ -289,28 +285,23 @@ export default function SignupScreen() {
                     onChangeText={handleIdChange}
                     onBlur={handleIdBlur}
                   />
-                  {idTouched && !idError && <Ionicons name="checkmark-circle" size={20} color={PRIMARY} />}
                 </View>
                 {idTouched && idError ? <Text style={styles.errorText}>{idError}</Text> : null}
               </View>
 
               {/* Phone Number Field */}
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>PHONE NUMBER</Text>
                 <View style={[
                   styles.inputWrapper, 
-                  { 
-                    backgroundColor: CARD_BG, 
-                    borderColor: phoneTouched && phoneError ? ERROR : (phoneTouched && !phoneError ? PRIMARY : BORDER) 
-                  }
+                  { borderColor: phoneTouched && phoneError ? ERROR : (phoneNumber ? PRIMARY : BORDER) }
                 ]}>
                   <View style={styles.phonePrefix}>
-                    <Text style={{ color: WHITE, fontWeight: '700' }}>+966</Text>
+                    <Text style={{ color: TEXT_MAIN, fontWeight: '500', fontSize: 15 }}>+966</Text>
                     <View style={styles.verticalDivider} />
                   </View>
                   <TextInput
-                    placeholder="Enter phone number"
-                    placeholderTextColor="rgba(255,255,255,0.3)"
+                    placeholder="Mobile Number"
+                    placeholderTextColor={TEXT_SECONDARY}
                     style={styles.input}
                     keyboardType="phone-pad"
                     maxLength={15}
@@ -318,63 +309,44 @@ export default function SignupScreen() {
                     onChangeText={handlePhoneChange}
                     onBlur={handlePhoneBlur}
                   />
-                  {phoneTouched && !phoneError && <Ionicons name="checkmark-circle" size={20} color={PRIMARY} />}
                 </View>
                 {phoneTouched && phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
               </View>
 
               {/* Password Field */}
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>PASSWORD</Text>
                 <View style={[
                   styles.inputWrapper, 
-                  { 
-                    backgroundColor: CARD_BG, 
-                    borderColor: passwordTouched && passwordError ? ERROR : (passwordTouched && !passwordError ? PRIMARY : BORDER) 
-                  }
+                  { borderColor: passwordTouched && passwordError ? ERROR : (password ? PRIMARY : BORDER) }
                 ]}>
-                  <Ionicons name="lock-closed-outline" size={20} color={passwordTouched && passwordError ? ERROR : PRIMARY} style={styles.inputIcon} />
                   <TextInput
-                    placeholder="Enter Password"
-                    placeholderTextColor="rgba(255,255,255,0.3)"
+                    placeholder="Enter your Password"
+                    placeholderTextColor={TEXT_SECONDARY}
                     style={styles.input}
                     secureTextEntry={!showPassword}
                     value={password}
                     onChangeText={handlePasswordChange}
                     onBlur={handlePasswordBlur}
                   />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                    <Ionicons
-                      name={showPassword ? "eye-off-outline" : "eye-outline"}
-                      size={20}
-                      color={TEXT_SECONDARY}
-                    />
-                  </TouchableOpacity>
                 </View>
                 {passwordTouched && passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
               </View>
 
               {/* Re-enter Password Field */}
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>RE-ENTER PASSWORD</Text>
                 <View style={[
                   styles.inputWrapper, 
-                  { 
-                    backgroundColor: CARD_BG, 
-                    borderColor: confirmPasswordTouched && confirmPasswordError ? ERROR : (confirmPasswordTouched && !confirmPasswordError ? PRIMARY : BORDER) 
-                  }
+                  { borderColor: confirmPasswordTouched && confirmPasswordError ? ERROR : (confirmPassword ? PRIMARY : BORDER) }
                 ]}>
-                  <Ionicons name="lock-closed-outline" size={20} color={confirmPasswordTouched && confirmPasswordError ? ERROR : PRIMARY} style={styles.inputIcon} />
                   <TextInput
-                    placeholder="Confirm Password"
-                    placeholderTextColor="rgba(255,255,255,0.3)"
+                    placeholder="Re-enter your Password"
+                    placeholderTextColor={TEXT_SECONDARY}
                     style={styles.input}
                     secureTextEntry={!showPassword}
                     value={confirmPassword}
                     onChangeText={handleConfirmPasswordChange}
                     onBlur={handleConfirmPasswordBlur}
                   />
-                  {confirmPasswordTouched && !confirmPasswordError && <Ionicons name="checkmark-circle" size={20} color={PRIMARY} />}
                 </View>
                 {confirmPasswordTouched && confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
               </View>
@@ -386,20 +358,11 @@ export default function SignupScreen() {
                   onPress={() => setAgreedTerms(!agreedTerms)}
                   activeOpacity={0.7}
                 >
-                  <View style={[styles.checkbox, { borderColor: SECONDARY, backgroundColor: agreedTerms ? SECONDARY : 'transparent' }]}>
-                    {agreedTerms && <Ionicons name="checkmark" size={14} color={BACKGROUND} />}
+                  <View style={[styles.checkbox, { borderColor: PRIMARY, backgroundColor: agreedTerms ? PRIMARY : 'transparent' }]}>
+                    {agreedTerms && <Ionicons name="checkmark" size={14} color={WHITE} />}
                   </View>
                   <Text style={styles.checkboxText}>
-                    I agree to the{" "}
-                    <Text 
-                      style={{ color: SECONDARY, fontWeight: '800' }} 
-                      onPress={(e) => {
-                        e.stopPropagation();
-                        router.push('/terms');
-                      }}
-                    >
-                      Terms & Conditions
-                    </Text>
+                    I agree <Text style={{ color: PRIMARY, textDecorationLine: 'underline' }} onPress={() => router.push('/terms')}>terms and conditions</Text>
                   </Text>
                 </TouchableOpacity>
 
@@ -408,45 +371,41 @@ export default function SignupScreen() {
                   onPress={() => setAgreedPrivacy(!agreedPrivacy)}
                   activeOpacity={0.7}
                 >
-                  <View style={[styles.checkbox, { borderColor: SECONDARY, backgroundColor: agreedPrivacy ? SECONDARY : 'transparent' }]}>
-                    {agreedPrivacy && <Ionicons name="checkmark" size={14} color={BACKGROUND} />}
+                  <View style={[styles.checkbox, { borderColor: PRIMARY, backgroundColor: agreedPrivacy ? PRIMARY : 'transparent' }]}>
+                    {agreedPrivacy && <Ionicons name="checkmark" size={14} color={WHITE} />}
                   </View>
                   <Text style={styles.checkboxText}>
-                    I agree to the{" "}
-                    <Text 
-                      style={{ color: SECONDARY, fontWeight: '800' }} 
-                      onPress={(e) => {
-                        e.stopPropagation();
-                        router.push('/privacy');
-                      }}
-                    >
-                      Privacy Policy
-                    </Text>
+                    I agree <Text style={{ color: PRIMARY, textDecorationLine: 'underline' }} onPress={() => router.push('/privacy')}>privacy policy</Text>
                   </Text>
                 </TouchableOpacity>
               </View>
 
               {/* Signup Button */}
               <TouchableOpacity
-                style={[styles.loginBtn, { backgroundColor: SECONDARY }]}
+                style={styles.loginBtn}
                 onPress={handleSignup}
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <ActivityIndicator color={BACKGROUND} />
+                  <ActivityIndicator color={WHITE} />
                 ) : (
-                  <>
-                    <Text style={[styles.loginBtnText, { color: BACKGROUND }]}>CREATE AN ACCOUNT</Text>
-                    <Ionicons name="arrow-forward" size={20} color={BACKGROUND} />
-                  </>
+                  <Text style={styles.loginBtnText}>Create an account</Text>
                 )}
               </TouchableOpacity>
             </Animated.View>
 
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Already have an account? </Text>
+              <Text style={styles.footerText}>Already have an account? - </Text>
               <TouchableOpacity onPress={() => router.push('/login')}>
-                <Text style={[styles.signUpText, { color: PRIMARY }]}>Sign In</Text>
+                <Text style={styles.signUpText}>Sign In</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Chat Icon */}
+            <View style={styles.chatIconContainer}>
+              <TouchableOpacity style={styles.chatIconBtn}>
+                <Ionicons name="chatbubble-ellipses-outline" size={24} color={PRIMARY} />
+                <Text style={styles.chatIconText}>Chat</Text>
               </TouchableOpacity>
             </View>
 
@@ -462,10 +421,10 @@ export default function SignupScreen() {
       >
         <View style={styles.modalOverlay}>
           <Animated.View entering={ZoomIn.duration(400)} style={styles.warningCard}>
-            <View style={[styles.warningIconCircle, { backgroundColor: warningIconColor + '20' }]}>
-              <Ionicons name={warningIcon as any} size={60} color={warningIconColor} />
+            <View style={styles.warningIconCircle}>
+              <Ionicons name={warningIcon as any} size={80} color={warningIconColor} />
             </View>
-            <Text style={styles.warningTitle}>{warningTitle}</Text>
+            <Text style={[styles.warningTitle, { color: warningIconColor }]}>{warningTitle}</Text>
             <Text style={styles.warningDesc}>
               {warningDesc}
             </Text>
@@ -494,34 +453,29 @@ const styles = StyleSheet.create({
   brandName: { fontSize: 34, fontWeight: '900', color: WHITE, letterSpacing: -1 },
   brandTagline: { fontSize: 14, color: '#64748b', fontWeight: '700', marginTop: 4, letterSpacing: 1, textTransform: 'uppercase' },
   formSection: { marginBottom: 32 },
-  welcomeText: { fontSize: 28, fontWeight: '900', color: WHITE, marginBottom: 8, letterSpacing: -0.5 },
-  subText: { fontSize: 15, color: '#94a3b8', fontWeight: '600', marginBottom: 28 },
-  inputContainer: { marginBottom: 20 },
-  inputLabel: { fontSize: 11, fontWeight: '800', color: '#64748b', marginBottom: 10, letterSpacing: 1 },
-  inputWrapper: { flexDirection: 'row', alignItems: 'center', height: 60, borderRadius: 18, borderWidth: 1, paddingHorizontal: 18 },
-  inputIcon: { marginRight: 14 },
-  input: { flex: 1, color: WHITE, fontSize: 15, fontWeight: '600' },
-  errorText: {
-    color: ERROR,
-    fontSize: 12,
-    fontWeight: '700',
-    marginTop: 6,
-    marginLeft: 6,
-  },
+  welcomeText: { fontSize: 24, fontWeight: '700', color: TEXT_MAIN, marginBottom: 12, textAlign: 'center' },
+  subText: { fontSize: 14, color: TEXT_SECONDARY, fontWeight: '400', marginBottom: 30, textAlign: 'center', paddingHorizontal: 20 },
+  inputContainer: { marginBottom: 16 },
+  inputWrapper: { flexDirection: 'row', alignItems: 'center', height: 56, borderRadius: 12, borderWidth: 1, paddingHorizontal: 16, backgroundColor: '#ffffff' },
+  input: { flex: 1, color: TEXT_MAIN, fontSize: 15 },
+  errorText: { color: ERROR, fontSize: 12, fontWeight: '500', marginTop: 4, marginLeft: 4 },
   phonePrefix: { flexDirection: 'row', alignItems: 'center', marginRight: 12 },
-  verticalDivider: { width: 1, height: 20, backgroundColor: 'rgba(255,255,255,0.1)', marginLeft: 12 },
+  verticalDivider: { width: 1, height: 24, backgroundColor: BORDER, marginLeft: 12 },
   checkboxSection: { marginVertical: 10, gap: 12 },
   checkboxRow: { flexDirection: 'row', alignItems: 'center' },
-  checkbox: { width: 20, height: 20, borderRadius: 6, borderWidth: 2, marginRight: 12, justifyContent: 'center', alignItems: 'center' },
-  checkboxText: { color: '#94a3b8', fontSize: 13, fontWeight: '600' },
-  loginBtn: { flexDirection: 'row', height: 62, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginTop: 20, shadowColor: '#eab308', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 8, gap: 10 },
-  loginBtnText: { fontSize: 16, fontWeight: '900', letterSpacing: 1 },
-  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-  footerText: { color: '#64748b', fontSize: 14, fontWeight: '600' },
-  signUpText: { fontSize: 14, fontWeight: '800' },
+  checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 1, marginRight: 12, justifyContent: 'center', alignItems: 'center' },
+  checkboxText: { color: TEXT_SECONDARY, fontSize: 14 },
+  loginBtn: { height: 56, borderRadius: 12, backgroundColor: PRIMARY, justifyContent: 'center', alignItems: 'center', marginTop: 20 },
+  loginBtnText: { fontSize: 16, fontWeight: '600', color: WHITE },
+  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 30 },
+  footerText: { color: TEXT_SECONDARY, fontSize: 14 },
+  signUpText: { fontSize: 14, fontWeight: '600', color: PRIMARY },
+  chatIconContainer: { alignItems: 'center', marginTop: 40, paddingBottom: 20 },
+  chatIconBtn: { width: 60, height: 60, borderRadius: 12, borderWidth: 1, borderColor: PRIMARY, justifyContent: 'center', alignItems: 'center' },
+  chatIconText: { fontSize: 10, color: PRIMARY, marginTop: 4 },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.85)',
+    backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 30,
@@ -529,53 +483,50 @@ const styles = StyleSheet.create({
   warningCard: {
     width: '100%',
     backgroundColor: CARD_BG,
-    borderRadius: 35,
-    padding: 35,
+    borderRadius: 24,
+    padding: 30,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 5,
   },
   warningIconCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 80,
+    height: 80,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
   },
   warningTitle: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: WHITE,
+    fontSize: 24,
+    fontWeight: '700',
     marginBottom: 15,
+    textAlign: 'center',
   },
   warningDesc: {
-    fontSize: 16,
+    fontSize: 15,
     color: TEXT_SECONDARY,
     textAlign: 'center',
     lineHeight: 24,
-    marginBottom: 10,
+    marginBottom: 30,
   },
   remainingText: {
     fontSize: 14,
-    color: SECONDARY,
-    fontWeight: '700',
+    color: PRIMARY,
+    fontWeight: '600',
     marginBottom: 30,
   },
   tryAgainBtn: {
     width: '100%',
-    height: 60,
-    borderRadius: 20,
+    height: 56,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 8,
   },
   tryAgainText: {
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

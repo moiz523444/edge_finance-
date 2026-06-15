@@ -9,35 +9,39 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-const PRIMARY = '#10b981'; // Emerald
-const SECONDARY = '#eab308'; // Amber
-const BACKGROUND = '#0a0f1c';
-const CARD_BG = '#111827';
-const WHITE = '#FFFFFF';
-const TEXT_SECONDARY = '#94a3b8';
-const BORDER = 'rgba(255, 255, 255, 0.08)';
+const PRIMARY = '#2E8B57'; // Green
+const SECONDARY = '#2E8B57'; // Green
+const BACKGROUND = '#ffffff';
+const CARD_BG = '#ffffff';
+const WHITE = '#ffffff';
+const TEXT_MAIN = '#111827';
+const TEXT_SECONDARY = '#6B7280';
+const BORDER = '#D1D5DB';
+const ERROR = '#ef4444';
 
 export default function TermsScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.content}>
           
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={28} color={WHITE} />
+            <Ionicons name="arrow-back" size={28} color={TEXT_MAIN} />
           </TouchableOpacity>
 
-          <View style={styles.logoSection}>
-            <View style={[styles.logoBadge, { backgroundColor: PRIMARY + '15' }]}>
-              <Ionicons name="flash" size={42} color={PRIMARY} />
-            </View>
-            <Text style={styles.brandName}>EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text></Text>
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('../assets/images/logo.png')} 
+              style={styles.logoImage} 
+              resizeMode="contain" 
+            />
           </View>
 
           <Text style={styles.titleText}>Terms and conditions</Text>
@@ -54,10 +58,10 @@ export default function TermsScreen() {
           </ScrollView>
 
           <TouchableOpacity 
-            style={[styles.actionBtn, { backgroundColor: SECONDARY }]} 
+            style={styles.actionBtn} 
             onPress={() => router.push('/privacy')}
           >
-            <Text style={[styles.actionBtnText, { color: BACKGROUND }]}>Accept And Continue</Text>
+            <Text style={styles.actionBtnText}>Accept And Continue</Text>
           </TouchableOpacity>
 
         </View>
@@ -69,13 +73,12 @@ export default function TermsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: BACKGROUND },
   content: { flex: 1, paddingHorizontal: 30, paddingTop: 40 },
-  backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'flex-start', marginBottom: 20 },
-  logoSection: { alignItems: 'center', marginBottom: 30 },
-  logoBadge: { width: 80, height: 80, borderRadius: 24, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  brandName: { fontSize: 28, fontWeight: '900', color: WHITE, letterSpacing: -0.5 },
-  titleText: { fontSize: 24, fontWeight: '800', color: WHITE, textAlign: 'center', marginBottom: 25 },
+  backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'flex-start', marginBottom: 10 },
+  logoContainer: { alignItems: 'center', marginBottom: 20 },
+  logoImage: { width: 140, height: 60 },
+  titleText: { fontSize: 24, fontWeight: '600', color: TEXT_MAIN, textAlign: 'center', marginBottom: 25 },
   scrollView: { flex: 1, marginBottom: 20, paddingRight: 10 },
-  bodyText: { fontSize: 14, color: TEXT_SECONDARY, lineHeight: 24, textAlign: 'justify' },
-  actionBtn: { height: 65, borderRadius: 22, justifyContent: 'center', alignItems: 'center', shadowColor: SECONDARY, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 8, marginBottom: 20 },
-  actionBtnText: { fontSize: 17, fontWeight: '900', letterSpacing: 0.5 },
+  bodyText: { fontSize: 14, color: TEXT_SECONDARY, lineHeight: 24, textAlign: 'left' },
+  actionBtn: { width: '100%', height: 56, borderRadius: 16, backgroundColor: PRIMARY, justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
+  actionBtnText: { fontSize: 16, fontWeight: '600', color: WHITE },
 });

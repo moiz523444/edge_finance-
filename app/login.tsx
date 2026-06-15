@@ -17,18 +17,20 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 
-const PRIMARY = '#10b981'; // Emerald
-const SECONDARY = '#eab308'; // Amber
-const BACKGROUND = '#0a0f1c';
-const CARD_BG = '#111827';
-const WHITE = '#FFFFFF';
-const TEXT_SECONDARY = '#94a3b8';
-const BORDER = 'rgba(255, 255, 255, 0.08)';
+const PRIMARY = '#2E8B57'; // Green
+const SECONDARY = '#2E8B57'; // Green
+const BACKGROUND = '#ffffff';
+const CARD_BG = '#ffffff';
+const WHITE = '#ffffff';
+const TEXT_MAIN = '#111827';
+const TEXT_SECONDARY = '#6B7280';
+const BORDER = '#D1D5DB';
 const ERROR = '#ef4444';
 
 export default function LoginScreen() {
@@ -223,25 +225,25 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-            
-            <View style={styles.logoSection}>
-              <View style={[styles.logoBadge, { backgroundColor: PRIMARY + '15' }]}>
-                <Ionicons name="flash" size={48} color={PRIMARY} />
-              </View>
-              <Text style={styles.brandName}>EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text></Text>
+
+            <View style={styles.logoContainer}>
+              <Image 
+                source={require('../assets/images/logo.png')} 
+                style={styles.logoImage} 
+                resizeMode="contain" 
+              />
             </View>
 
             <View style={styles.formSection}>
-              <Text style={styles.titleText}>Sign In To Account</Text>
-              <Text style={styles.subText}>Sign with username or email and password to use your account.</Text>
+              <Text style={styles.titleText}>Sign In{'\n'}To Account</Text>
+              <Text style={styles.subText}>Sign with username or email and{'\n'}password to use your account.</Text>
 
               {/* Username/Email Field */}
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>USERNAME OR EMAIL</Text>
                 <View style={[
                   styles.inputWrapper, 
                   { 
@@ -249,29 +251,21 @@ export default function LoginScreen() {
                     borderColor: emailTouched && emailError ? ERROR : (emailTouched && !emailError ? PRIMARY : BORDER) 
                   }
                 ]}>
-                  <Ionicons 
-                    name="person-outline" 
-                    size={20} 
-                    color={emailTouched && emailError ? ERROR : PRIMARY} 
-                    style={styles.inputIcon} 
-                  />
                   <TextInput
-                    placeholder="Enter username or email"
-                    placeholderTextColor="rgba(255,255,255,0.3)"
+                    placeholder="Username or email"
+                    placeholderTextColor={TEXT_SECONDARY}
                     style={styles.input}
                     autoCapitalize="none"
                     value={email}
                     onChangeText={handleEmailChange}
                     onBlur={handleEmailBlur}
                   />
-                  {emailTouched && !emailError && <Ionicons name="checkmark-circle" size={20} color={PRIMARY} />}
                 </View>
                 {emailTouched && emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
               </View>
 
               {/* Password Field */}
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>PASSWORD</Text>
                 <View style={[
                   styles.inputWrapper, 
                   { 
@@ -279,15 +273,9 @@ export default function LoginScreen() {
                     borderColor: passwordTouched && passwordError ? ERROR : (passwordTouched && !passwordError ? PRIMARY : BORDER) 
                   }
                 ]}>
-                  <Ionicons 
-                    name="lock-closed-outline" 
-                    size={20} 
-                    color={passwordTouched && passwordError ? ERROR : PRIMARY} 
-                    style={styles.inputIcon} 
-                  />
                   <TextInput
-                    placeholder="Enter password"
-                    placeholderTextColor="rgba(255,255,255,0.3)"
+                    placeholder="Password"
+                    placeholderTextColor={TEXT_SECONDARY}
                     style={styles.input}
                     secureTextEntry={!showPassword}
                     value={password}
@@ -302,52 +290,51 @@ export default function LoginScreen() {
               </View>
 
               <TouchableOpacity 
-                style={[styles.loginBtn, { backgroundColor: SECONDARY }]} 
+                style={styles.loginBtn} 
                 onPress={handleLogin}
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <ActivityIndicator color={BACKGROUND} />
+                  <ActivityIndicator color={WHITE} />
                 ) : (
-                  <Text style={[styles.loginBtnText, { color: BACKGROUND }]}>Sign In</Text>
+                  <Text style={styles.loginBtnText}>Sign In</Text>
                 )}
               </TouchableOpacity>
 
               <View style={styles.dividerContainer}>
-                <View style={styles.dividerLine} />
                 <Text style={styles.dividerText}>or login with</Text>
-                <View style={styles.dividerLine} />
               </View>
 
               {/* Biometrics */}
               <View style={styles.biometricRow}>
                 <TouchableOpacity style={styles.bioBtn} onPress={() => handleBiometricAuth('faceid')}>
-                  <View style={[styles.bioIconBox, { borderColor: BORDER }]}>
-                    <Ionicons name="scan-outline" size={28} color={WHITE} />
+                  <View style={styles.bioIconBox}>
+                    <Ionicons name="scan-outline" size={28} color={PRIMARY} />
                   </View>
                   <Text style={styles.bioText}>Face ID</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.bioBtn} onPress={() => handleBiometricAuth('fingerprint')}>
-                  <View style={[styles.bioIconBox, { borderColor: BORDER }]}>
-                    <Ionicons name="finger-print-outline" size={28} color={WHITE} />
+                  <View style={styles.bioIconBox}>
+                    <Ionicons name="finger-print-outline" size={28} color={PRIMARY} />
                   </View>
                   <Text style={styles.bioText}>Fingerprint</Text>
                 </TouchableOpacity>
               </View>
 
               <View style={styles.footer}>
-                <Text style={styles.footerText}>{"Don't have an account?"} </Text>
+                <Text style={styles.footerText}>Don't have an account? - </Text>
                 <TouchableOpacity onPress={() => router.push('/signup')}>
-                  <Text style={[styles.signUpText, { color: PRIMARY }]}>Sign Up</Text>
+                  <Text style={styles.signUpText}>Sign Up</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
             {/* Chat Icon */}
             <TouchableOpacity style={styles.chatContainer}>
-              <View style={[styles.chatBadge, { borderColor: SECONDARY + '30' }]}>
-                <Ionicons name="chatbubble-ellipses-outline" size={28} color={SECONDARY} />
+              <View style={styles.chatBadge}>
+                <Ionicons name="chatbubble-ellipses-outline" size={24} color={PRIMARY} />
+                <Text style={styles.chatText}>Chat</Text>
               </View>
             </TouchableOpacity>
 
@@ -363,10 +350,10 @@ export default function LoginScreen() {
       >
         <View style={styles.modalOverlay}>
           <Animated.View entering={ZoomIn.duration(400)} style={styles.warningCard}>
-            <View style={[styles.warningIconCircle, { backgroundColor: warningIconColor + '20' }]}>
-              <Ionicons name={warningIcon as any} size={60} color={warningIconColor} />
+            <View style={styles.warningIconCircle}>
+              <Ionicons name={warningIcon as any} size={80} color={warningIconColor} />
             </View>
-            <Text style={styles.warningTitle}>{warningTitle}</Text>
+            <Text style={[styles.warningTitle, { color: warningIconColor }]}>{warningTitle}</Text>
             <Text style={styles.warningDesc}>
               {warningDesc}
             </Text>
@@ -385,11 +372,11 @@ export default function LoginScreen() {
       <Modal visible={biometricType !== null} transparent={true} animationType="fade">
         <View style={styles.modalOverlay}>
           <Animated.View entering={ZoomIn.duration(400)} style={styles.bioCard}>
-            <View style={[styles.bioLargeIconCircle, { backgroundColor: SECONDARY + '10' }]}>
+            <View style={styles.bioLargeIconCircle}>
               <Ionicons 
                 name={biometricType === 'faceid' ? "scan-outline" : "finger-print-outline"} 
-                size={70} 
-                color={SECONDARY} 
+                size={80} 
+                color={PRIMARY} 
               />
             </View>
             <Text style={styles.bioCardTitle}>
@@ -408,89 +395,50 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: BACKGROUND },
-  scrollContent: { paddingHorizontal: 30, paddingTop: 60, paddingBottom: 30 },
-  logoSection: { alignItems: 'center', marginBottom: 40 },
-  logoBadge: { width: 90, height: 90, borderRadius: 28, justifyContent: 'center', alignItems: 'center', marginBottom: 15 },
-  brandName: { fontSize: 32, fontWeight: '900', color: WHITE, letterSpacing: -0.5 },
-  formSection: { width: '100%' },
-  titleText: { fontSize: 28, fontWeight: '900', color: WHITE, textAlign: 'center', marginBottom: 10 },
-  subText: { fontSize: 15, color: TEXT_SECONDARY, textAlign: 'center', marginBottom: 35, lineHeight: 22 },
-  inputContainer: { marginBottom: 18 },
-  inputLabel: { fontSize: 11, fontWeight: '800', color: '#64748b', marginBottom: 10, letterSpacing: 1 },
-  inputWrapper: { flexDirection: 'row', alignItems: 'center', height: 60, borderRadius: 18, borderWidth: 1, paddingHorizontal: 20 },
-  inputIcon: { marginRight: 14 },
-  input: { flex: 1, color: WHITE, fontSize: 16, fontWeight: '600' },
-  errorText: {
-    color: ERROR,
-    fontSize: 12,
-    fontWeight: '700',
-    marginTop: 6,
-    marginLeft: 6,
-  },
-  loginBtn: { height: 62, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10, shadowColor: SECONDARY, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 8 },
-  loginBtnText: { fontSize: 18, fontWeight: '900' },
-  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 35 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: 'rgba(255,255,255,0.05)' },
-  dividerText: { color: TEXT_SECONDARY, paddingHorizontal: 15, fontSize: 13, fontWeight: '700', textTransform: 'uppercase' },
-  biometricRow: { flexDirection: 'row', justifyContent: 'center', gap: 40, marginBottom: 40 },
+  scrollContent: { paddingHorizontal: 30, paddingTop: 40, paddingBottom: 30 },
+  logoContainer: { alignItems: 'center', marginBottom: 20 },
+  logoImage: { width: 140, height: 60 },
+  formSection: { width: '100%', marginTop: 10 },
+  titleText: { fontSize: 32, fontWeight: '800', color: '#1E293B', textAlign: 'center', marginBottom: 12 },
+  subText: { fontSize: 14, color: TEXT_SECONDARY, textAlign: 'center', marginBottom: 40, lineHeight: 22, paddingHorizontal: 10 },
+  inputContainer: { marginBottom: 16 },
+  inputWrapper: { flexDirection: 'row', alignItems: 'center', height: 56, borderRadius: 12, borderWidth: 1, paddingHorizontal: 16, backgroundColor: CARD_BG },
+  input: { flex: 1, color: TEXT_MAIN, fontSize: 16 },
+  errorText: { color: ERROR, fontSize: 12, marginTop: 4, marginLeft: 4 },
+  loginBtn: { width: '100%', height: 56, borderRadius: 16, backgroundColor: PRIMARY, justifyContent: 'center', alignItems: 'center', marginTop: 10 },
+  loginBtnText: { fontSize: 16, fontWeight: '600', color: WHITE },
+  dividerContainer: { flexDirection: 'row', justifyContent: 'center', marginVertical: 30 },
+  dividerText: { color: TEXT_SECONDARY, fontSize: 12 },
+  biometricRow: { flexDirection: 'row', justifyContent: 'center', gap: 30, marginBottom: 40 },
   bioBtn: { alignItems: 'center' },
-  bioIconBox: { width: 60, height: 60, borderRadius: 20, borderWidth: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: CARD_BG },
-  bioText: { color: TEXT_SECONDARY, fontSize: 13, fontWeight: '700', marginTop: 10 },
+  bioIconBox: { width: 64, height: 64, borderRadius: 16, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center' },
+  bioText: { color: TEXT_SECONDARY, fontSize: 12, marginTop: 8 },
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 30 },
-  footerText: { color: TEXT_SECONDARY, fontSize: 15, fontWeight: '600' },
-  signUpText: { fontSize: 15, fontWeight: '800' },
+  footerText: { color: TEXT_SECONDARY, fontSize: 14 },
+  signUpText: { fontSize: 14, fontWeight: '600', color: PRIMARY },
   chatContainer: { alignSelf: 'center', marginTop: 10 },
-  chatBadge: { width: 60, height: 60, borderRadius: 30, backgroundColor: CARD_BG, justifyContent: 'center', alignItems: 'center', borderWidth: 1 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'center', alignItems: 'center', padding: 30 },
-  bioCard: { width: '100%', backgroundColor: WHITE, borderRadius: 35, padding: 40, alignItems: 'center' },
-  bioLargeIconCircle: { width: 110, height: 110, borderRadius: 55, justifyContent: 'center', alignItems: 'center', marginBottom: 25 },
-  bioCardTitle: { fontSize: 26, fontWeight: '900', color: BACKGROUND, marginBottom: 10 },
-  bioCardDesc: { fontSize: 15, color: '#64748b', fontWeight: '600' },
+  chatBadge: { width: 64, height: 64, borderRadius: 12, backgroundColor: CARD_BG, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: PRIMARY },
+  chatText: { fontSize: 10, color: PRIMARY, marginTop: 4 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: 30 },
+  bioCard: { width: '100%', backgroundColor: CARD_BG, borderRadius: 24, padding: 30, alignItems: 'center' },
+  bioLargeIconCircle: { width: 80, height: 80, justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
+  bioCardTitle: { fontSize: 24, fontWeight: '700', color: TEXT_MAIN, marginBottom: 10 },
+  bioCardDesc: { fontSize: 15, color: TEXT_SECONDARY, textAlign: 'center' },
   warningCard: {
     width: '100%',
     backgroundColor: CARD_BG,
-    borderRadius: 35,
-    padding: 35,
+    borderRadius: 24,
+    padding: 30,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 5,
   },
-  warningIconCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  warningTitle: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: WHITE,
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  warningDesc: {
-    fontSize: 16,
-    color: TEXT_SECONDARY,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 30,
-  },
-  tryAgainBtn: {
-    width: '100%',
-    height: 60,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 8,
-  },
-  tryAgainText: {
-    fontSize: 17,
-    fontWeight: '900',
-  },
+  warningIconCircle: { width: 80, height: 80, justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
+  warningTitle: { fontSize: 24, fontWeight: '700', marginBottom: 15, textAlign: 'center' },
+  warningDesc: { fontSize: 15, color: TEXT_SECONDARY, textAlign: 'center', lineHeight: 24, marginBottom: 30 },
+  tryAgainBtn: { width: '100%', height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
+  tryAgainText: { fontSize: 16, fontWeight: '600' },
 });

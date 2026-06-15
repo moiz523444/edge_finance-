@@ -13,19 +13,21 @@ import {
   Modal,
   ActivityIndicator,
   Linking,
+  Image,
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { apiService } from '../services/api';
 
 const { width } = Dimensions.get('window');
 
-const PRIMARY = '#10b981'; // Emerald
-const SECONDARY = '#eab308'; // Amber
-const BACKGROUND = '#0a0f1c';
-const CARD_BG = '#111827';
-const WHITE = '#FFFFFF';
-const TEXT_SECONDARY = '#94a3b8';
-const BORDER = 'rgba(255, 255, 255, 0.08)';
+const PRIMARY = '#2E8B57'; // Green
+const SECONDARY = '#2E8B57'; // Green
+const BACKGROUND = '#ffffff';
+const CARD_BG = '#ffffff';
+const WHITE = '#ffffff';
+const TEXT_MAIN = '#111827';
+const TEXT_SECONDARY = '#6B7280';
+const BORDER = '#D1D5DB';
 const ERROR = '#ef4444';
 
 export default function NafathScreen() {
@@ -356,19 +358,19 @@ export default function NafathScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.content}>
           
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={28} color={WHITE} />
+            <Ionicons name="arrow-back" size={28} color={TEXT_MAIN} />
           </TouchableOpacity>
 
           <View style={styles.logoSection}>
-            <View style={[styles.logoBadge, { backgroundColor: PRIMARY + '15' }]}>
-              <Ionicons name="flash" size={42} color={PRIMARY} />
-            </View>
-            <Text style={styles.brandName}>EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text></Text>
+            <Image 
+              source={require('../assets/images/logo.png')} 
+              style={{ width: 180, height: 70, resizeMode: 'contain', marginBottom: 20 }} 
+            />
           </View>
 
           <View style={styles.flexCenter}>
@@ -435,10 +437,10 @@ export default function NafathScreen() {
       >
         <View style={styles.modalOverlay}>
           <Animated.View entering={ZoomIn.duration(400)} style={styles.warningCard}>
-            <View style={[styles.warningIconCircle, { backgroundColor: warningIconColor + '20' }]}>
-              <Ionicons name={warningIcon as any} size={60} color={warningIconColor} />
+            <View style={styles.warningIconCircle}>
+              <Ionicons name={warningIcon as any} size={80} color={warningIconColor} />
             </View>
-            <Text style={styles.warningTitle}>{warningTitle}</Text>
+            <Text style={[styles.warningTitle, { color: warningIconColor }]}>{warningTitle}</Text>
             <Text style={styles.warningDesc}>{warningDesc}</Text>
             
             <TouchableOpacity 
@@ -497,21 +499,19 @@ const styles = StyleSheet.create({
   content: { flex: 1, paddingHorizontal: 30, paddingTop: 40 },
   backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'flex-start', marginBottom: 20 },
   logoSection: { alignItems: 'center', marginBottom: 40 },
-  logoBadge: { width: 80, height: 80, borderRadius: 24, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  brandName: { fontSize: 28, fontWeight: '900', color: WHITE, letterSpacing: -0.5 },
   flexCenter: { flex: 1, justifyContent: 'center' },
   card: {
     backgroundColor: CARD_BG,
-    borderRadius: 35,
-    padding: 35,
+    borderRadius: 24,
+    padding: 30,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: BORDER,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.4,
-    shadowRadius: 30,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 2,
   },
   numberCircle: {
     width: 110,
@@ -521,10 +521,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 25,
-    borderWidth: 3,
-    borderColor: BORDER,
+    borderWidth: 2,
+    borderColor: PRIMARY,
   },
-  numberText: { fontSize: 48, fontWeight: '900' },
+  numberText: { fontSize: 44, fontWeight: '700' },
   pulseRing: { position: 'absolute', width: 130, height: 130, borderRadius: 65, borderWidth: 2 },
   iconCircle: {
     width: 110,
@@ -534,40 +534,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 25,
   },
-  cardTitle: { fontSize: 24, fontWeight: '900', color: WHITE, marginBottom: 12, textAlign: 'center' },
+  cardTitle: { fontSize: 22, fontWeight: '700', color: TEXT_MAIN, marginBottom: 12, textAlign: 'center' },
   cardDesc: { fontSize: 15, color: TEXT_SECONDARY, textAlign: 'center', lineHeight: 22, marginBottom: 30 },
-  actionBtn: { width: '100%', height: 60, borderRadius: 20, justifyContent: 'center', alignItems: 'center', shadowColor: SECONDARY, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 8, marginBottom: 20 },
-  actionBtnText: { fontSize: 17, fontWeight: '900' },
-  dashboardLink: { fontSize: 15, fontWeight: '800' },
+  actionBtn: { width: '100%', height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center', backgroundColor: PRIMARY, marginBottom: 20 },
+  actionBtnText: { fontSize: 16, fontWeight: '600', color: WHITE },
+  dashboardLink: { fontSize: 15, fontWeight: '600', color: PRIMARY },
   
   // Modal dialog styles
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'center', alignItems: 'center', padding: 30 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: 30 },
   warningCard: {
     width: '100%',
     backgroundColor: CARD_BG,
-    borderRadius: 35,
-    padding: 35,
+    borderRadius: 24,
+    padding: 30,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 5,
   },
   warningIconCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 80,
+    height: 80,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
   },
   warningTitle: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: WHITE,
+    fontSize: 24,
+    fontWeight: '700',
     marginBottom: 15,
     textAlign: 'center',
   },
   warningDesc: {
-    fontSize: 16,
+    fontSize: 15,
     color: TEXT_SECONDARY,
     textAlign: 'center',
     lineHeight: 24,
@@ -575,19 +576,20 @@ const styles = StyleSheet.create({
   },
   tryAgainBtn: {
     width: '100%',
-    height: 60,
-    borderRadius: 20,
+    height: 56,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
   tryAgainText: {
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: 16,
+    fontWeight: '600',
+    color: WHITE,
   },
   
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 15, 28, 0.92)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
@@ -596,21 +598,21 @@ const styles = StyleSheet.create({
   loaderCard: {
     width: '100%',
     backgroundColor: CARD_BG,
-    borderRadius: 35,
-    padding: 35,
+    borderRadius: 24,
+    padding: 30,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 5,
     borderWidth: 1,
     borderColor: BORDER,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.4,
-    shadowRadius: 30,
-    elevation: 10,
   },
   loaderTitle: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: WHITE,
+    fontSize: 22,
+    fontWeight: '700',
+    color: TEXT_MAIN,
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -629,12 +631,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    borderWidth: 3,
-    borderColor: BORDER,
+    borderWidth: 2,
+    borderColor: PRIMARY,
   },
   loaderNumberText: {
-    fontSize: 44,
-    fontWeight: '900',
+    fontSize: 40,
+    fontWeight: '700',
   },
   loaderPulseRing: {
     position: 'absolute',
@@ -650,18 +652,15 @@ const styles = StyleSheet.create({
   },
   loaderActionBtn: {
     width: '100%',
-    height: 60,
-    borderRadius: 20,
+    height: 56,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 8,
+    backgroundColor: PRIMARY,
   },
   loaderActionBtnText: {
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: 16,
+    fontWeight: '600',
+    color: WHITE,
   },
 });
