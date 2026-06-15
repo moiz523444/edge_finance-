@@ -45,8 +45,7 @@ export default function ConfirmationScreen() {
 
   const handleModalOk = () => {
     setShowSuccessModal(false);
-    // Usually goes back to dashboard or home after success
-    router.replace('/(tabs)/dashboard');
+    router.replace('/eligible-offers');
   };
 
   return (
