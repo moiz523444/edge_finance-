@@ -131,113 +131,24 @@ export default function OTPScreen() {
     }
 
     setIsLoading(true);
+    
+    // TODO: API INTEGRATION
+    // Uncomment the API call below when backend is ready
+    /*
     try {
       const response = await apiService.auth.verifyOtp(tpuRecId, transactionId, otpCode, idNumber, eventId, otpUuid);
       setIsLoading(false);
-
-      if (response.SUCCEEDED) {
-        await saveIdNumber(idNumber);
-        const title = (response.MESSAGETITLE && response.MESSAGETITLE !== 'Title Not Found') ? response.MESSAGETITLE : 'Verification Completed';
-        const desc = (response.MESSAGETEXT && response.MESSAGETEXT !== 'Message Not Found') ? response.MESSAGETEXT : 'Your OTP has been successfully verified.';
-        setWarningTitle(title);
-        setWarningDesc(desc);
-        setWarningButtonText(response.BUTTONTEXT || 'Proceed');
-        setWarningIcon('checkmark-circle-outline');
-        setWarningIconColor(PRIMARY);
-
-        setOnWarningAction(() => async () => {
-          setShowWarning(false);
-          const nextTpu = response.TPURECID ? response.TPURECID.toString() : tpuRecId;
-          const nextTrans = response.TRANSACTIONID ? response.TRANSACTIONID.toString() : transactionId;
-
-          // Smart Routing based on response details
-          if (params.from === 'signup') {
-            router.push({
-              pathname: '/terms',
-              params: { tpuRecId: nextTpu, transactionId: nextTrans, idNumber: idNumber }
-            });
-          } else if (response.NEXTSTAGEDETAILS && response.NEXTSTAGEDETAILS.SCREENCODE === 'UISNAFATH') {
-            router.push({
-              pathname: '/nafath',
-              params: { tpuRecId: nextTpu, transactionId: nextTrans, idNumber: idNumber }
-            });
-          } else if (params.from === 'login' && eventId === '36') {
-            setIsLoading(true);
-            try {
-              let otpToken = '';
-              const resData = (response.DATA && Array.isArray(response.DATA)) ? response.DATA[0] : (response.DATA || null);
-              if (resData && resData.OTPTOKEN) {
-                otpToken = resData.OTPTOKEN;
-              }
-              // BYPASS: updateDevice API is currently down, simulating success
-              // const deviceRes = await apiService.auth.updateDevice(idNumber, otpToken);
-              const deviceRes = { SUCCEEDED: true, RESPONSESTATUS: true };
-              setIsLoading(false);
-
-              const isDeviceSuccess = deviceRes.SUCCEEDED && deviceRes.RESPONSESTATUS !== false;
-
-              if (isDeviceSuccess) {
-                router.replace('/(tabs)/dashboard');
-              } else {
-                const title = (deviceRes.MESSAGETITLE && deviceRes.MESSAGETITLE !== 'Title Not Found')
-                  ? deviceRes.MESSAGETITLE
-                  : 'Device Update Failed';
-                const desc = (deviceRes.MESSAGETEXT && deviceRes.MESSAGETEXT !== 'Message Not Found')
-                  ? deviceRes.MESSAGETEXT
-                  : (deviceRes.RESPONSEDESCRIPTION && deviceRes.RESPONSEDESCRIPTION !== 'Description Not Found' && deviceRes.RESPONSEDESCRIPTION !== '')
-                    ? deviceRes.RESPONSEDESCRIPTION
-                    : 'Unable to register this new device. Please try again.';
-
-                setWarningTitle(title);
-                setWarningDesc(desc);
-                setWarningButtonText('Ok');
-                setWarningIcon('alert-circle-outline');
-                setWarningIconColor(ERROR);
-                setOnWarningAction(() => () => setShowWarning(false));
-                setShowWarning(true);
-              }
-            } catch (err: any) {
-              setIsLoading(false);
-              console.error('[Device Registration Error]', err);
-            }
-          } else {
-            if (params.from === 'login') {
-              router.replace('/(tabs)/dashboard');
-            } else {
-              router.push('/terms');
-            }
-          }
-        });
-        setShowWarning(true);
-      } else {
-        const title = (response.MESSAGETITLE && response.MESSAGETITLE !== 'Title Not Found')
-          ? response.MESSAGETITLE
-          : 'Verification Failed';
-        const desc = (response.MESSAGETEXT && response.MESSAGETEXT !== 'Message Not Found')
-          ? response.MESSAGETEXT
-          : (response.RESPONSEDESCRIPTION && response.RESPONSEDESCRIPTION !== 'Description Not Found' && response.RESPONSEDESCRIPTION !== 'Message Not Found' && response.RESPONSEDESCRIPTION !== '')
-            ? response.RESPONSEDESCRIPTION
-            : 'The OTP code is incorrect or has expired.';
-
-        setWarningTitle(title);
-        setWarningDesc(desc);
-        setWarningButtonText('Try Again');
-        setWarningIcon('alert-circle-outline');
-        setWarningIconColor(ERROR);
-        setOnWarningAction(() => () => setShowWarning(false));
-        setShowWarning(true);
-      }
-    } catch (error: any) {
-      setIsLoading(false);
-      console.error('[OTP Verification Error]', error);
-      setWarningTitle('Network Error');
-      setWarningDesc(error.message || 'Unable to connect to the server. Please check your network.');
-      setWarningButtonText('Try Again');
-      setWarningIcon('wifi-outline');
-      setWarningIconColor(ERROR);
-      setOnWarningAction(() => () => setShowWarning(false));
-      setShowWarning(true);
+      // Handle response logic...
+    } catch (error) {
+       // Handle error...
     }
+    */
+
+    // MOCK SUCCESS FOR NOW
+    setTimeout(() => {
+      setIsLoading(false);
+      router.push('/final-success');
+    }, 1000);
   };
 
   return (
@@ -249,22 +160,20 @@ export default function OTPScreen() {
           <View style={styles.content}>
 
             {/* Header / Back */}
-            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-              <Ionicons name="arrow-back" size={28} color={TEXT_MAIN} />
-            </TouchableOpacity>
-
-            <View style={styles.logoContainer}>
-              <Image 
-                source={require('../assets/images/logo.png')} 
-                style={styles.logoImage} 
-                resizeMode="contain" 
-              />
+            <View style={styles.header}>
+              <View style={styles.logoContainer}>
+                <Image 
+                  source={require('../assets/images/logo.png')} 
+                  style={styles.logoImage} 
+                  resizeMode="contain" 
+                />
+              </View>
             </View>
 
             <Animated.View entering={FadeInDown.duration(800)} style={styles.textSection}>
               <Text style={styles.titleText}>Verify Account!</Text>
               <Text style={styles.subText}>
-                A code is sent to your mobile number registered at ABSHER
+                Enter 4-digit Code code we have sent{"\n"}to at <Text style={{ color: PRIMARY, fontWeight: '700' }}>+0 000 000 0000.</Text>
               </Text>
             </Animated.View>
 
@@ -356,21 +265,21 @@ export default function OTPScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: BACKGROUND },
   content: { flex: 1, paddingHorizontal: 30, paddingTop: 40 },
-  backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'flex-start', marginBottom: 10 },
-  logoContainer: { alignItems: 'center', marginBottom: 10 },
+  header: { alignItems: 'center', justifyContent: 'center', width: '100%', marginBottom: 10 },
+  logoContainer: { alignItems: 'center' },
   logoImage: { width: 140, height: 60 },
   textSection: { alignItems: 'center', marginBottom: 40, marginTop: 20 },
-  titleText: { fontSize: 26, fontWeight: '700', color: TEXT_MAIN, marginBottom: 12 },
-  subText: { fontSize: 14, color: TEXT_SECONDARY, textAlign: 'center', lineHeight: 22, paddingHorizontal: 20 },
+  titleText: { fontSize: 26, fontWeight: '800', color: '#1e1b4b', marginBottom: 12 },
+  subText: { fontSize: 14, color: TEXT_SECONDARY, textAlign: 'center', lineHeight: 22, paddingHorizontal: 10 },
   otpContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 40, paddingHorizontal: 10 },
-  otpBox: { width: (width - 100) / 4, height: 70, backgroundColor: BACKGROUND, borderRadius: 16, borderWidth: 1, borderColor: BORDER, justifyContent: 'center', alignItems: 'center' },
+  otpBox: { width: (width - 100) / 4, height: 70, backgroundColor: BACKGROUND, borderRadius: 12, borderWidth: 1, borderColor: '#d1d5db', justifyContent: 'center', alignItems: 'center' },
   otpInput: { fontSize: 32, fontWeight: '400', color: PRIMARY, textAlign: 'center', width: '100%' },
   timerSection: { alignItems: 'center', marginBottom: 40 },
   timerText: { color: TEXT_SECONDARY, fontSize: 14 },
-  resendText: { fontSize: 14, fontWeight: '700', color: TEXT_SECONDARY, textDecorationLine: 'underline' },
-  continueBtn: { width: '100%', height: 56, borderRadius: 16, backgroundColor: PRIMARY, justifyContent: 'center', alignItems: 'center' },
-  continueBtnText: { fontSize: 16, fontWeight: '600', color: WHITE },
-  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 30 },
+  resendText: { fontSize: 14, fontWeight: '700', color: PRIMARY, textDecorationLine: 'underline' },
+  continueBtn: { width: '100%', height: 56, borderRadius: 12, backgroundColor: PRIMARY, justifyContent: 'center', alignItems: 'center' },
+  continueBtnText: { fontSize: 16, fontWeight: '700', color: WHITE },
+  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 40 },
   footerText: { color: TEXT_SECONDARY, fontSize: 14 },
   signInLink: { fontSize: 14, fontWeight: '600', color: PRIMARY },
   
