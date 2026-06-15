@@ -1,5 +1,5 @@
 import { HapticTab } from '@/components/haptic-tab';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Platform, View, StyleSheet, ActivityIndicator } from 'react-native';
@@ -24,12 +24,12 @@ export default function TabLayout() {
     checkAuth();
   }, []);
 
-  const PRIMARY = '#10b981';
-  const SECONDARY = '#eab308';
-  const BACKGROUND = '#0a0f1c';
-  const CARD_BG = '#111827';
-  const INACTIVE = '#64748b';
-  const BORDER = 'rgba(255, 255, 255, 0.08)';
+  const PRIMARY = '#2E8B57';
+  const SECONDARY = '#2E8B57';
+  const BACKGROUND = '#ffffff';
+  const CARD_BG = '#ffffff';
+  const INACTIVE = '#9CA3AF';
+  const BORDER = '#E5E7EB';
 
   if (isAuthenticated === null) {
     return (
@@ -42,67 +42,78 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: SECONDARY, // Active color to match Amber highlights
+        tabBarActiveTintColor: PRIMARY,
         tabBarInactiveTintColor: INACTIVE,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
+          position: 'absolute',
+          bottom: Platform.select({ ios: insets.bottom || 20, default: 20 }),
+          left: 20,
+          right: 20,
           backgroundColor: CARD_BG,
-          borderTopWidth: 1,
-          borderTopColor: BORDER,
-          minHeight: Platform.select({ ios: 90, default: 75 }),
-          paddingBottom: Platform.select({ ios: insets.bottom || 20, default: 0 }),
-          paddingTop: 10,
-          elevation: 25,
+          borderRadius: 35,
+          borderTopWidth: 0,
+          height: 70,
+          paddingBottom: 0,
+          paddingTop: 0,
+          elevation: 10,
           shadowColor: '#000',
-          shadowOpacity: 0.3,
+          shadowOpacity: 0.1,
           shadowRadius: 15,
-          shadowOffset: { width: 0, height: -5 },
+          shadowOffset: { width: 0, height: 5 },
+        },
+        tabBarItemStyle: {
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tabBarLabelStyle: {
           fontSize: 10,
-          fontWeight: '800',
-          marginTop: 4,
-          textTransform: 'uppercase',
-          letterSpacing: 0.5,
+          fontWeight: '700',
+          marginTop: 2,
+          marginBottom: 2,
         },
       }}>
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons size={24} name={focused ? "home" : "home-outline"} color={color} />
+            <MaterialCommunityIcons size={28} name={focused ? "home-variant" : "home-variant-outline"} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="finance"
         options={{
-          title: 'Finance',
+          title: 'Finances',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons size={24} name={focused ? "wallet" : "wallet-outline"} color={color} />
+            <MaterialCommunityIcons size={28} name={focused ? "chart-bar" : "chart-bar"} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="apply"
         options={{
-          title: 'Apply',
+          title: 'Apply Now',
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.centerBtn, { backgroundColor: focused ? SECONDARY : BACKGROUND, borderColor: SECONDARY }]}>
-              <Ionicons size={28} name="add" color={focused ? BACKGROUND : SECONDARY} />
-            </View>
+            <MaterialCommunityIcons size={28} name={focused ? "calendar-text" : "calendar-text-outline"} color={PRIMARY} />
           ),
-          tabBarLabel: () => null, // Hide label for center button
+          tabBarLabelStyle: {
+            fontSize: 10,
+            fontWeight: '800',
+            marginTop: 2,
+            marginBottom: 2,
+            color: PRIMARY,
+          }
         }}
       />
       <Tabs.Screen
         name="report"
         options={{
-          title: 'Report',
+          title: 'Support',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons size={24} name={focused ? "document-text" : "document-text-outline"} color={color} />
+            <MaterialCommunityIcons size={28} name={focused ? "headset" : "headset"} color={color} />
           ),
         }}
       />
@@ -111,7 +122,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons size={24} name={focused ? "person" : "person-outline"} color={color} />
+            <MaterialCommunityIcons size={28} name={focused ? "account" : "account-outline"} color={color} />
           ),
         }}
       />
@@ -119,19 +130,5 @@ export default function TabLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  centerBtn: {
-    width: 54,
-    height: 54,
-    borderRadius: 20,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-    elevation: 8,
-    shadowColor: '#eab308',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-  }
-});
+const styles = StyleSheet.create({});
+

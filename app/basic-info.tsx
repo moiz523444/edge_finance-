@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   ScrollView,
   TextInput,
+  Image,
+  Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -14,18 +16,20 @@ import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
 import { useFormData } from "../context/FormDataContext";
+import CustomDropdown from "../components/CustomDropdown";
 
-const PRIMARY = "#10b981"; // Emerald
-const SECONDARY = "#eab308"; // Gold/Orange Theme
-const BACKGROUND = "#0a0a0f";
-const CARD_BG = "#111827";
-const GLASS = "rgba(255,255,255,0.07)";
+const PRIMARY = "#2E8B57"; // Edge Finance Green
+const WHITE = "#ffffff";
+const TEXT_MAIN = "#1f2937";
+const TEXT_SECONDARY = "#64748b";
+const BORDER_COLOR = "#cbd5e1";
 
 export default function BasicInfoScreen() {
   const router = useRouter();
   const { declaredData } = useFormData();
 
   // States
+  const [purpose, setPurpose] = useState("Private");
   const [residentialSituation, setResidentialSituation] = useState("home_owner");
   const [residentialType, setResidentialType] = useState("apartment");
   const [maritalStatus, setMaritalStatus] = useState("single");
@@ -48,39 +52,33 @@ export default function BasicInfoScreen() {
   }, [declaredData]);
 
   const residentialOptions = [
-    { id: "home_owner", title: "Home owner", icon: "home" },
-    { id: "renting", title: "Renting", icon: "key" },
-    { id: "company_provided", title: "Company provided", icon: "business" },
-    { id: "parents", title: "Living with parents", icon: "people" },
+    { id: "home_owner", title: "Home owner", icon: "home-outline" },
+    { id: "renting", title: "Renting", icon: "key-outline" },
+    { id: "company_provided", title: "Company provided", icon: "business-outline" },
+    { id: "parents", title: "Living with parents", icon: "people-outline" },
   ];
 
   const maritalOptions = [
-    { id: "single", title: "Single", icon: "person" },
-    { id: "married", title: "Married", icon: "heart" },
-    { id: "others", title: "Others", icon: "ellipsis-horizontal" },
+    { id: "single", title: "Single", icon: "person-outline" },
+    { id: "married", title: "Married", icon: "heart-outline" },
+    { id: "others", title: "Others", icon: "ellipsis-horizontal-outline" },
   ];
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
-
-      {/* Global Background Gradient */}
-      <LinearGradient
-        colors={[BACKGROUND, "#0f172a", BACKGROUND]}
-        style={StyleSheet.absoluteFill}
-      />
+      <StatusBar style="dark" />
 
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
+            <Ionicons name="arrow-back" size={24} color={TEXT_MAIN} />
           </TouchableOpacity>
           <View style={styles.headerLogo}>
-            <Ionicons name="flash" size={20} color={PRIMARY} />
-            <Text style={styles.headerBrand}>
-              EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text>
-            </Text>
+            <Image 
+              source={require('../assets/images/logo.png')} 
+              style={{ width: 140, height: 40, resizeMode: 'contain' }} 
+            />
           </View>
           <View style={{ width: 44 }} />
         </View>
@@ -93,11 +91,11 @@ export default function BasicInfoScreen() {
             <View style={styles.progressContainer}>
               <View style={styles.progressHeader}>
                 <Text style={styles.progressPercentage}>20% Completed</Text>
-                <Text style={styles.progressSteps}>Step 2 of 6</Text>
+                <Text style={styles.progressSteps}>2 out of 6 completed</Text>
               </View>
               <View style={styles.progressBarBg}>
                 <LinearGradient
-                  colors={[SECONDARY, "#ca8a04"]}
+                  colors={["#2E8B57", "#34d399"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={[styles.progressFill, { width: "20%" }]}
@@ -111,10 +109,16 @@ export default function BasicInfoScreen() {
             {/* Purpose of Finance */}
             <View style={styles.inputWrapper}>
               <Text style={styles.inputLabel}>Purpose of Finance? <Text style={{ color: "red" }}>*</Text></Text>
-              <View style={styles.dropdownContainer}>
-                <Text style={styles.dropdownText}>Private</Text>
-                <Ionicons name="chevron-down" size={20} color="#94a3b8" />
-              </View>
+              <CustomDropdown
+                options={[
+                  { label: "Private", value: "Private" },
+                  { label: "Business", value: "Business" },
+                  { label: "Other", value: "Other" },
+                ]}
+                selectedValue={purpose}
+                onSelect={setPurpose}
+                placeholder="Select purpose"
+              />
             </View>
 
             {/* My residential situation */}
@@ -122,31 +126,30 @@ export default function BasicInfoScreen() {
               <Text style={styles.inputLabel}>My residential situation</Text>
               <View style={styles.cardsRow}>
                 {residentialOptions.map((opt) => (
-                  <TouchableOpacity
-                    key={opt.id}
-                    style={[
-                      styles.selectionCard,
-                      residentialSituation === opt.id && styles.selectionCardActive
-                    ]}
-                    onPress={() => setResidentialSituation(opt.id)}
-                    activeOpacity={0.8}
-                  >
-                    <View style={[styles.cardIconContainer, residentialSituation === opt.id && { backgroundColor: "rgba(255,255,255,0.15)" }]}>
+                  <View key={opt.id} style={styles.cardItem}>
+                    <TouchableOpacity
+                      style={[
+                        styles.selectionBox,
+                        residentialSituation === opt.id && styles.selectionBoxActive
+                      ]}
+                      onPress={() => setResidentialSituation(opt.id)}
+                      activeOpacity={0.8}
+                    >
                       <Ionicons
                         name={opt.icon as any}
-                        size={22}
-                        color={residentialSituation === opt.id ? "#fff" : SECONDARY}
+                        size={28}
+                        color={residentialSituation === opt.id ? WHITE : TEXT_MAIN}
                       />
-                    </View>
+                    </TouchableOpacity>
                     <Text
                       style={[
                         styles.cardText,
-                        residentialSituation === opt.id && { color: "#fff", fontWeight: "700" }
+                        residentialSituation === opt.id && { color: PRIMARY, fontWeight: "600" }
                       ]}
                     >
                       {opt.title}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 ))}
               </View>
             </View>
@@ -156,17 +159,17 @@ export default function BasicInfoScreen() {
               <Text style={styles.inputLabel}>Residential Type</Text>
               <View style={styles.radioGroup}>
                 <TouchableOpacity style={styles.radioOption} onPress={() => setResidentialType("apartment")} activeOpacity={0.8}>
-                  <View style={[styles.radioOuter, residentialType === "apartment" && { borderColor: SECONDARY }]}>
+                  <View style={[styles.radioOuter, residentialType === "apartment" && styles.radioOuterActive]}>
                     {residentialType === "apartment" && <Animated.View entering={ZoomIn} style={styles.radioInner} />}
                   </View>
-                  <Text style={[styles.radioLabel, residentialType === "apartment" && { color: "#fff" }]}>Apartment</Text>
+                  <Text style={styles.radioLabel}>Apartment</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.radioOption} onPress={() => setResidentialType("villa")} activeOpacity={0.8}>
-                  <View style={[styles.radioOuter, residentialType === "villa" && { borderColor: SECONDARY }]}>
+                  <View style={[styles.radioOuter, residentialType === "villa" && styles.radioOuterActive]}>
                     {residentialType === "villa" && <Animated.View entering={ZoomIn} style={styles.radioInner} />}
                   </View>
-                  <Text style={[styles.radioLabel, residentialType === "villa" && { color: "#fff" }]}>Villa</Text>
+                  <Text style={styles.radioLabel}>Villa</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -176,32 +179,30 @@ export default function BasicInfoScreen() {
               <Text style={styles.inputLabel}>Marital Status</Text>
               <View style={styles.cardsRowCentered}>
                 {maritalOptions.map((opt) => (
-                  <TouchableOpacity
-                    key={opt.id}
-                    style={[
-                      styles.selectionCard,
-                      { flex: 0, width: "30%" },
-                      maritalStatus === opt.id && styles.selectionCardActive
-                    ]}
-                    onPress={() => setMaritalStatus(opt.id)}
-                    activeOpacity={0.8}
-                  >
-                    <View style={[styles.cardIconContainer, maritalStatus === opt.id && { backgroundColor: "rgba(255,255,255,0.15)" }]}>
+                  <View key={opt.id} style={styles.cardItem}>
+                    <TouchableOpacity
+                      style={[
+                        styles.selectionBox,
+                        maritalStatus === opt.id && styles.selectionBoxActive
+                      ]}
+                      onPress={() => setMaritalStatus(opt.id)}
+                      activeOpacity={0.8}
+                    >
                       <Ionicons
                         name={opt.icon as any}
-                        size={22}
-                        color={maritalStatus === opt.id ? "#fff" : SECONDARY}
+                        size={28}
+                        color={maritalStatus === opt.id ? WHITE : TEXT_MAIN}
                       />
-                    </View>
+                    </TouchableOpacity>
                     <Text
                       style={[
                         styles.cardText,
-                        maritalStatus === opt.id && { color: "#fff", fontWeight: "700" }
+                        maritalStatus === opt.id && { color: PRIMARY, fontWeight: "600" }
                       ]}
                     >
                       {opt.title}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 ))}
               </View>
             </View>
@@ -220,7 +221,7 @@ export default function BasicInfoScreen() {
                   value={inputData.state}
                   onChangeText={inputData.setter}
                   keyboardType="numeric"
-                  placeholderTextColor="#64748b"
+                  placeholderTextColor="#94a3b8"
                 />
               </View>
             ))}
@@ -230,16 +231,8 @@ export default function BasicInfoScreen() {
 
         {/* Footer Action */}
         <Animated.View entering={FadeInDown.duration(600).delay(400)} style={styles.footer}>
-          <TouchableOpacity activeOpacity={0.8} onPress={() => router.push("/living-expenses")}>
-            <LinearGradient
-              colors={[SECONDARY, "#ca8a04"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.nextBtn}
-            >
-              <Text style={styles.nextBtnText}>Next</Text>
-              <Ionicons name="arrow-forward" size={20} color="#fff" style={{ marginLeft: 8 }} />
-            </LinearGradient>
+          <TouchableOpacity style={styles.nextBtn} activeOpacity={0.8} onPress={() => router.push("/living-expenses")}>
+            <Text style={styles.nextBtnText}>Next</Text>
           </TouchableOpacity>
         </Animated.View>
       </SafeAreaView>
@@ -248,163 +241,127 @@ export default function BasicInfoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: BACKGROUND },
+  container: { flex: 1, backgroundColor: WHITE },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'android' ? 40 : 20,
+    paddingBottom: 15,
   },
   backBtn: {
     width: 44,
     height: 44,
-    borderRadius: 14,
-    backgroundColor: GLASS,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
-  headerLogo: { flexDirection: "row", alignItems: "center", gap: 6 },
-  headerBrand: {
-    fontSize: 17,
-    fontWeight: "900",
-    color: "#fff",
-    letterSpacing: -0.5,
-  },
+  headerLogo: { flex: 1, alignItems: "center" },
 
   scrollContent: {
     padding: 24,
     paddingBottom: 130, // Space for footer
   },
   pageTitle: {
-    color: "#fff",
-    fontSize: 28,
-    fontWeight: "900",
+    color: TEXT_MAIN,
+    fontSize: 18,
+    fontWeight: "800",
     textAlign: "center",
-    marginTop: 10,
-    marginBottom: 35,
-    letterSpacing: -0.5,
+    marginBottom: 30,
   },
 
   progressContainer: {
-    backgroundColor: "rgba(17, 24, 39, 0.4)",
-    padding: 20,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: GLASS,
-    marginBottom: 40,
+    marginBottom: 30,
   },
   progressHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginBottom: 12,
+    alignItems: "baseline",
+    marginBottom: 10,
   },
   progressPercentage: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "800",
+    color: TEXT_MAIN,
+    fontSize: 15,
+    fontWeight: "600",
   },
   progressSteps: {
-    color: "#94a3b8",
-    fontSize: 13,
-    fontWeight: "700",
+    color: "#cbd5e1",
+    fontSize: 12,
+    fontWeight: "500",
   },
   progressBarBg: {
-    height: 8,
-    backgroundColor: "rgba(255,255,255,0.05)",
-    borderRadius: 4,
+    height: 6,
+    backgroundColor: "#e2e8f0",
+    borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    borderRadius: 4,
+    borderRadius: 3,
   },
 
   formSection: {
-    gap: 28,
+    gap: 24,
   },
   inputWrapper: {
-    gap: 10,
+    gap: 8,
   },
   inputLabel: {
-    color: "#cbd5e1",
-    fontSize: 14.5,
-    fontWeight: "700",
-  },
-  dropdownContainer: {
-    backgroundColor: "rgba(17, 24, 39, 0.6)",
-    borderWidth: 1,
-    borderColor: GLASS,
-    borderRadius: 16,
-    paddingHorizontal: 18,
-    height: 56,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  dropdownText: {
-    color: "#fff",
-    fontSize: 15,
+    color: TEXT_MAIN,
+    fontSize: 14,
+    fontWeight: "600",
   },
   textInput: {
-    backgroundColor: "rgba(17, 24, 39, 0.6)",
+    backgroundColor: WHITE,
     borderWidth: 1,
-    borderColor: GLASS,
-    borderRadius: 16,
-    paddingHorizontal: 18,
-    height: 56,
-    color: "#fff",
-    fontSize: 16,
+    borderColor: BORDER_COLOR,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 52,
+    color: TEXT_MAIN,
+    fontSize: 14,
+    fontWeight: "400",
   },
 
   cardsRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
     justifyContent: "space-between",
-    gap: 12,
+    gap: 10,
   },
   cardsRowCentered: {
     flexDirection: "row",
-    justifyContent: "center",
-    gap: 12,
+    justifyContent: "flex-start",
+    gap: 16,
   },
-  selectionCard: {
-    width: "48%",
-    backgroundColor: "rgba(17, 24, 39, 0.6)",
-    borderWidth: 1,
-    borderColor: GLASS,
-    borderRadius: 16,
-    padding: 16,
+  cardItem: {
+    alignItems: "center",
+    width: 70,
+  },
+  selectionBox: {
+    width: 60,
+    height: 60,
+    backgroundColor: WHITE,
+    borderWidth: 1.5,
+    borderColor: PRIMARY,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    gap: 12,
+    marginBottom: 8,
   },
-  selectionCardActive: {
-    backgroundColor: SECONDARY,
-    borderColor: SECONDARY,
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  cardIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "rgba(234, 179, 8, 0.1)",
-    alignItems: "center",
-    justifyContent: "center",
+  selectionBoxActive: {
+    backgroundColor: PRIMARY,
+    borderColor: PRIMARY,
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   cardText: {
-    color: "#94a3b8",
-    fontSize: 13,
+    color: TEXT_SECONDARY,
+    fontSize: 12,
     textAlign: "center",
-    lineHeight: 18,
+    fontWeight: "500",
   },
 
   radioGroup: {
@@ -420,21 +377,25 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#475569",
+    borderWidth: 1.5,
+    borderColor: "#cbd5e1",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
+    backgroundColor: WHITE,
+  },
+  radioOuterActive: {
+    borderColor: PRIMARY,
   },
   radioInner: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: SECONDARY,
+    backgroundColor: PRIMARY,
   },
   radioLabel: {
-    color: "#94a3b8",
-    fontSize: 15,
+    color: TEXT_SECONDARY,
+    fontSize: 14,
     fontWeight: "500",
   },
 
@@ -445,25 +406,18 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 24,
     paddingBottom: 34,
-    backgroundColor: BACKGROUND,
-    borderTopWidth: 1,
-    borderTopColor: GLASS,
+    backgroundColor: WHITE,
   },
   nextBtn: {
-    flexDirection: "row",
+    backgroundColor: PRIMARY,
     paddingVertical: 18,
-    borderRadius: 16,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 8,
   },
   nextBtnText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "900",
+    color: WHITE,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

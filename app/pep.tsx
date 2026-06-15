@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   ScrollView,
   ActivityIndicator,
+  Image,
+  Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -15,11 +17,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import Animated, { FadeInDown, FadeInRight, ZoomIn } from "react-native-reanimated";
 import { useFormData } from "../context/FormDataContext";
 
-const PRIMARY = "#10b981"; // Emerald
-const SECONDARY = "#eab308"; // Gold/Orange Theme
-const BACKGROUND = "#0a0a0f";
-const CARD_BG = "#111827";
-const GLASS = "rgba(255,255,255,0.07)";
+const PRIMARY = "#2E8B57"; // Edge Finance Green
+const BACKGROUND = "#f8fafc";
+const WHITE = "#ffffff";
+const TEXT_MAIN = "#1f2937";
+const TEXT_SECONDARY = "#64748b";
 
 export default function PEPScreen() {
   const router = useRouter();
@@ -27,14 +29,11 @@ export default function PEPScreen() {
   const [isPEP, setIsPEP] = useState<boolean | null>(false);
 
   useEffect(() => {
-    // We assume ID is available or fetched from another auth context.
-    // Hardcoded for demonstration based on the API docs provided.
     fetchDeclaredInfo("1023321548");
   }, []);
 
   useEffect(() => {
     if (declaredData?.AFFILIATION) {
-      // API might return "true"/"false" strings or boolean
       const pepValue = declaredData.AFFILIATION.PEP;
       if (pepValue === true || pepValue === "true" || pepValue === "TRUE") {
         setIsPEP(true);
@@ -54,127 +53,100 @@ export default function PEPScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
-
-      {/* Global Background Gradient */}
-      <LinearGradient
-        colors={[BACKGROUND, "#0f172a", BACKGROUND]}
-        style={StyleSheet.absoluteFill}
-      />
+      <StatusBar style="dark" />
 
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => router.replace("/dashboard")}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
+            <Ionicons name="arrow-back" size={24} color={TEXT_MAIN} />
           </TouchableOpacity>
           <View style={styles.headerLogo}>
-            <Ionicons name="flash" size={20} color={PRIMARY} />
-            <Text style={styles.headerBrand}>
-              EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text>
-            </Text>
+            <Image 
+              source={require('../assets/images/logo.png')} 
+              style={{ width: 140, height: 40, resizeMode: 'contain' }} 
+            />
           </View>
           <View style={{ width: 44 }} />
         </View>
 
         {isLoadingData ? (
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="large" color={SECONDARY} />
-            <Text style={{ color: "#94a3b8", marginTop: 16 }}>Loading your details...</Text>
+            <ActivityIndicator size="large" color={PRIMARY} />
+            <Text style={{ color: TEXT_SECONDARY, marginTop: 16 }}>Loading your details...</Text>
           </View>
         ) : (
           <>
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
               <Animated.View entering={FadeInDown.duration(600).delay(100)}>
-            <Text style={styles.pageTitle}>Compliance Check</Text>
-            <Text style={styles.pageSubtitle}>Politically Exposed Person (PEP)</Text>
+                <Text style={styles.pageTitle}>PEP</Text>
 
-            {/* Progress Section */}
-            <View style={styles.progressContainer}>
-              <View style={styles.progressHeader}>
-                <Text style={styles.progressPercentage}>10% Completed</Text>
-                <Text style={styles.progressSteps}>Step 1 of 6</Text>
-              </View>
-              <View style={styles.progressBarBg}>
-                <LinearGradient
-                  colors={[SECONDARY, "#ca8a04"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={[styles.progressFill, { width: "10%" }]}
-                />
-              </View>
-            </View>
-          </Animated.View>
+                {/* Progress Section */}
+                <View style={styles.progressContainer}>
+                  <View style={styles.progressHeader}>
+                    <Text style={styles.progressPercentage}>10% Completed</Text>
+                    <Text style={styles.progressSteps}>1 out of 6 completed</Text>
+                  </View>
+                  <View style={styles.progressBarBg}>
+                    <LinearGradient
+                      colors={["#2E8B57", "#34d399"]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={[styles.progressFill, { width: "10%" }]}
+                    />
+                  </View>
+                </View>
+              </Animated.View>
 
-          {/* Question */}
-          <Animated.View entering={FadeInRight.duration(600).delay(200)} style={styles.questionCard}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="information-circle-outline" size={28} color={SECONDARY} />
-            </View>
-            <Text style={styles.questionText}>
-              Have you, any of your immediate family members, or any person with whom
-              you have a financial or close personal relationship ever worked in a
-              prominent public or political position inside or outside the Kingdom,
-              whether currently or in the past?
-            </Text>
-          </Animated.View>
+              {/* Question */}
+              <Animated.View entering={FadeInRight.duration(600).delay(200)} style={styles.questionSection}>
+                <Text style={styles.questionText}>
+                  Have you, any of your immediate family members, or any person with whom
+                  you have a financial or close personal relationship ever worked in a
+                  prominent public or political position inside or outside the Kingdom,
+                  whether currently or in the past?
+                </Text>
+              </Animated.View>
 
-          {/* Radio Buttons */}
-          <Animated.View entering={FadeInRight.duration(600).delay(300)} style={styles.radioGroup}>
-            <TouchableOpacity
-              style={[
-                styles.radioOptionCard,
-                isPEP === false && styles.radioOptionCardActive
-              ]}
-              onPress={() => setIsPEP(false)}
-              activeOpacity={0.8}
-            >
-              <View
-                style={[
-                  styles.radioOuter,
-                  isPEP === false && { borderColor: SECONDARY },
-                ]}
-              >
-                {isPEP === false && <Animated.View entering={ZoomIn} style={styles.radioInner} />}
-              </View>
-              <Text style={[styles.radioLabel, isPEP === false && { color: "#fff" }]}>{"No, I don't"}</Text>
-            </TouchableOpacity>
+              {/* Radio Buttons */}
+              <Animated.View entering={FadeInRight.duration(600).delay(300)} style={styles.radioGroup}>
+                <TouchableOpacity
+                  style={styles.radioOption}
+                  onPress={() => setIsPEP(false)}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.radioOuter, isPEP === false && styles.radioOuterActive]}>
+                    {isPEP === false && <Animated.View entering={ZoomIn} style={styles.radioInner} />}
+                  </View>
+                  <Text style={styles.radioLabel}>No I don't</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[
-                styles.radioOptionCard,
-                isPEP === true && styles.radioOptionCardActive
-              ]}
-              onPress={() => setIsPEP(true)}
-              activeOpacity={0.8}
-            >
-              <View
-                style={[
-                  styles.radioOuter,
-                  isPEP === true && { borderColor: SECONDARY },
-                ]}
-              >
-                {isPEP === true && <Animated.View entering={ZoomIn} style={styles.radioInner} />}
-              </View>
-              <Text style={[styles.radioLabel, isPEP === true && { color: "#fff" }]}>Yes, I do</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </ScrollView>
+                <TouchableOpacity
+                  style={styles.radioOption}
+                  onPress={() => setIsPEP(true)}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.radioOuter, isPEP === true && styles.radioOuterActive]}>
+                    {isPEP === true && <Animated.View entering={ZoomIn} style={styles.radioInner} />}
+                  </View>
+                  <Text style={styles.radioLabel}>Yes I do</Text>
+                </TouchableOpacity>
+              </Animated.View>
 
-        {/* Footer Action */}
-        <Animated.View entering={FadeInDown.duration(600).delay(400)} style={styles.footer}>
-          <TouchableOpacity activeOpacity={0.8} onPress={handleContinue}>
-            <LinearGradient
-              colors={[SECONDARY, "#ca8a04"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.continueBtn}
-            >
-              <Text style={styles.continueBtnText}>Continue securely</Text>
-              <Ionicons name="lock-closed" size={18} color="#fff" style={{ marginLeft: 8 }} />
-            </LinearGradient>
-          </TouchableOpacity>
-        </Animated.View>
+              {/* Hint Text */}
+              <Animated.View entering={FadeInRight.duration(600).delay(400)}>
+                <Text style={styles.hintText}>
+                  If "Yes", please open the following to be filed by the customer provide the following details:
+                </Text>
+              </Animated.View>
+            </ScrollView>
+
+            {/* Footer Action */}
+            <Animated.View entering={FadeInDown.duration(600).delay(400)} style={styles.footer}>
+              <TouchableOpacity style={styles.continueBtn} activeOpacity={0.8} onPress={handleContinue}>
+                <Text style={styles.continueBtnText}>Continue</Text>
+              </TouchableOpacity>
+            </Animated.View>
           </>
         )}
       </SafeAreaView>
@@ -183,152 +155,114 @@ export default function PEPScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: BACKGROUND },
+  container: { flex: 1, backgroundColor: WHITE },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'android' ? 40 : 20,
+    paddingBottom: 15,
   },
   backBtn: {
     width: 44,
     height: 44,
-    borderRadius: 14,
-    backgroundColor: GLASS,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
-  headerLogo: { flexDirection: "row", alignItems: "center", gap: 6 },
-  headerBrand: {
-    fontSize: 17,
-    fontWeight: "900",
-    color: "#fff",
-    letterSpacing: -0.5,
-  },
+  headerLogo: { flex: 1, alignItems: "center" },
 
   scrollContent: {
     padding: 24,
     paddingBottom: 130, // Space for footer
   },
   pageTitle: {
-    color: "#fff",
-    fontSize: 28,
-    fontWeight: "900",
+    color: TEXT_MAIN,
+    fontSize: 18,
+    fontWeight: "800",
     textAlign: "center",
-    marginTop: 10,
-    letterSpacing: -0.5,
-  },
-  pageSubtitle: {
-    color: SECONDARY,
-    fontSize: 14,
-    fontWeight: "700",
-    textAlign: "center",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginTop: 6,
-    marginBottom: 40,
+    marginBottom: 30,
   },
 
   progressContainer: {
-    backgroundColor: "rgba(17, 24, 39, 0.4)",
-    padding: 20,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: GLASS,
     marginBottom: 40,
   },
   progressHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginBottom: 12,
+    alignItems: "baseline",
+    marginBottom: 10,
   },
   progressPercentage: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "800",
+    color: TEXT_MAIN,
+    fontSize: 15,
+    fontWeight: "600",
   },
   progressSteps: {
-    color: "#94a3b8",
-    fontSize: 13,
-    fontWeight: "700",
+    color: "#cbd5e1",
+    fontSize: 12,
+    fontWeight: "500",
   },
   progressBarBg: {
-    height: 8,
-    backgroundColor: "rgba(255,255,255,0.05)",
-    borderRadius: 4,
+    height: 6,
+    backgroundColor: "#e2e8f0",
+    borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    borderRadius: 4,
+    borderRadius: 3,
   },
 
-  questionCard: {
-    backgroundColor: CARD_BG,
-    padding: 24,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: GLASS,
+  questionSection: {
     marginBottom: 25,
   },
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "rgba(234, 179, 8, 0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-  },
   questionText: {
-    color: "#e2e8f0",
-    fontSize: 16,
-    lineHeight: 26,
-    fontWeight: "500",
+    color: TEXT_SECONDARY,
+    fontSize: 14,
+    lineHeight: 24,
+    fontWeight: "400",
   },
 
   radioGroup: {
-    gap: 16,
+    flexDirection: "row",
+    gap: 30,
     marginBottom: 30,
   },
-  radioOptionCard: {
+  radioOption: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(17, 24, 39, 0.6)",
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: GLASS,
-  },
-  radioOptionCardActive: {
-    borderColor: SECONDARY,
-    backgroundColor: "rgba(234, 179, 8, 0.05)",
   },
   radioOuter: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    borderWidth: 2,
-    borderColor: "#475569",
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: "#cbd5e1",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 14,
+    marginRight: 10,
+    backgroundColor: WHITE,
+  },
+  radioOuterActive: {
+    borderColor: PRIMARY,
   },
   radioInner: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: SECONDARY,
+    backgroundColor: PRIMARY,
   },
   radioLabel: {
+    color: TEXT_SECONDARY,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+
+  hintText: {
     color: "#94a3b8",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 13,
+    lineHeight: 22,
   },
 
   footer: {
@@ -338,25 +272,18 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 24,
     paddingBottom: 34,
-    backgroundColor: BACKGROUND,
-    borderTopWidth: 1,
-    borderTopColor: GLASS,
+    backgroundColor: WHITE,
   },
   continueBtn: {
-    flexDirection: "row",
+    backgroundColor: PRIMARY,
     paddingVertical: 18,
-    borderRadius: 16,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 8,
   },
   continueBtnText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "900",
+    color: WHITE,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   ScrollView,
   TextInput,
+  Image,
+  Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -16,11 +18,11 @@ import Animated, { FadeInDown, FadeInRight, ZoomIn } from "react-native-reanimat
 import { useFormData } from "../context/FormDataContext";
 import CustomDropdown from "../components/CustomDropdown";
 
-const PRIMARY = "#10b981"; // Emerald
-const SECONDARY = "#eab308"; // Gold/Orange Theme
-const BACKGROUND = "#0a0a0f";
-const CARD_BG = "#111827";
-const GLASS = "rgba(255,255,255,0.07)";
+const PRIMARY = "#2E8B57"; // Edge Finance Green
+const WHITE = "#ffffff";
+const TEXT_MAIN = "#1f2937";
+const TEXT_SECONDARY = "#64748b";
+const BORDER_COLOR = "#cbd5e1";
 
 export default function PEPDetailsScreen() {
   const router = useRouter();
@@ -51,43 +53,36 @@ export default function PEPDetailsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
-
-      {/* Global Background Gradient */}
-      <LinearGradient
-        colors={[BACKGROUND, "#0f172a", BACKGROUND]}
-        style={StyleSheet.absoluteFill}
-      />
+      <StatusBar style="dark" />
 
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
+            <Ionicons name="arrow-back" size={24} color={TEXT_MAIN} />
           </TouchableOpacity>
           <View style={styles.headerLogo}>
-            <Ionicons name="flash" size={20} color={PRIMARY} />
-            <Text style={styles.headerBrand}>
-              EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text>
-            </Text>
+            <Image 
+              source={require('../assets/images/logo.png')} 
+              style={{ width: 140, height: 40, resizeMode: 'contain' }} 
+            />
           </View>
           <View style={{ width: 44 }} />
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <Animated.View entering={FadeInDown.duration(600).delay(100)}>
-            <Text style={styles.pageTitle}>Compliance Check</Text>
-            <Text style={styles.pageSubtitle}>Politically Exposed Person (PEP)</Text>
+            <Text style={styles.pageTitle}>PEP</Text>
 
             {/* Progress Section */}
             <View style={styles.progressContainer}>
               <View style={styles.progressHeader}>
                 <Text style={styles.progressPercentage}>10% Completed</Text>
-                <Text style={styles.progressSteps}>Step 1 of 6</Text>
+                <Text style={styles.progressSteps}>1 out of 6 completed</Text>
               </View>
               <View style={styles.progressBarBg}>
                 <LinearGradient
-                  colors={[SECONDARY, "#ca8a04"]}
+                  colors={["#2E8B57", "#34d399"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={[styles.progressFill, { width: "10%" }]}
@@ -96,41 +91,56 @@ export default function PEPDetailsScreen() {
             </View>
           </Animated.View>
 
-          {/* Question Summary (Selected Yes) */}
-          <Animated.View entering={FadeInRight.duration(600).delay(200)} style={styles.questionCard}>
-            <View style={styles.questionHeader}>
-              <View style={styles.iconContainer}>
-                <Ionicons name="alert-circle" size={22} color={SECONDARY} />
-              </View>
-              <Text style={styles.questionLabel}>PEP Declaration: YES</Text>
-            </View>
+          {/* Question matching PEP screen */}
+          <Animated.View entering={FadeInRight.duration(600).delay(200)} style={styles.questionSection}>
             <Text style={styles.questionText}>
-              You have declared having a relationship or working in a prominent public/political position.
+              Have you, any of your immediate family members, or any person with whom
+              you have a financial or close personal relationship ever worked in a
+              prominent public or political position inside or outside the Kingdom,
+              whether currently or in the past?
+            </Text>
+          </Animated.View>
+
+          {/* Radio Buttons (Fixed Selection as they are already here) */}
+          <Animated.View entering={FadeInRight.duration(600).delay(300)} style={styles.radioGroup}>
+            <View style={styles.radioOption}>
+              <View style={styles.radioOuter}>
+                {/* empty inner */}
+              </View>
+              <Text style={styles.radioLabel}>No I don't</Text>
+            </View>
+
+            <View style={styles.radioOption}>
+              <View style={[styles.radioOuter, styles.radioOuterActive]}>
+                <View style={styles.radioInner} />
+              </View>
+              <Text style={styles.radioLabel}>Yes I do</Text>
+            </View>
+          </Animated.View>
+
+          {/* Hint Text */}
+          <Animated.View entering={FadeInRight.duration(600).delay(400)}>
+            <Text style={styles.hintText}>
+              If "Yes", please open the following to be filed by the customer provide the following details:
             </Text>
           </Animated.View>
 
           {/* Form Fields */}
-          <Animated.View entering={FadeInDown.duration(600).delay(300)} style={styles.formContainer}>
-            <Text style={styles.formHeader}>
-              Please provide the following details to be filed by the customer:
-            </Text>
-
+          <Animated.View entering={FadeInDown.duration(600).delay(500)} style={styles.formContainer}>
             <View style={styles.formGroup}>
               {/* Full name / Related members */}
               <View style={styles.inputWrapper}>
-                <Text style={styles.inputLabel}>Full name / Related members</Text>
                 <TextInput
                   style={styles.textInput}
                   value={fullName}
                   onChangeText={setFullName}
-                  placeholder="Enter full name"
-                  placeholderTextColor="#64748b"
+                  placeholder="Full name / Related members"
+                  placeholderTextColor="#94a3b8"
                 />
               </View>
 
               {/* Position */}
               <CustomDropdown
-                label="Position"
                 options={[
                   { label: "Minister", value: "Minister" },
                   { label: "Ambassador", value: "Ambassador" },
@@ -139,12 +149,11 @@ export default function PEPDetailsScreen() {
                 ]}
                 selectedValue={position}
                 onSelect={setPosition}
-                placeholder="Select position"
+                placeholder="Position"
               />
 
               {/* Government entity or country */}
               <CustomDropdown
-                label="Government entity or country"
                 options={[
                   { label: "Saudi Arabia", value: "Saudi Arabia" },
                   { label: "Ministry of Defense", value: "Ministry of Defense" },
@@ -152,12 +161,11 @@ export default function PEPDetailsScreen() {
                 ]}
                 selectedValue={entity}
                 onSelect={setEntity}
-                placeholder="Select entity/country"
+                placeholder="Government entity or country"
               />
 
               {/* Nature of relationship */}
               <CustomDropdown
-                label="Nature of relationship"
                 options={[
                   { label: "Direct", value: "Direct" },
                   { label: "Relative", value: "Relative" },
@@ -165,12 +173,11 @@ export default function PEPDetailsScreen() {
                 ]}
                 selectedValue={relationship}
                 onSelect={setRelationship}
-                placeholder="Select relationship"
+                placeholder="Nature of relationship"
               />
 
               {/* Time period */}
               <CustomDropdown
-                label="Time period (if applicable)"
                 options={[
                   { label: "Less than 1 year", value: "Less than 1 year" },
                   { label: "1 - 5 years", value: "1 - 5 years" },
@@ -178,24 +185,16 @@ export default function PEPDetailsScreen() {
                 ]}
                 selectedValue={timePeriod}
                 onSelect={setTimePeriod}
-                placeholder="Select time period"
+                placeholder="Time period if applicable"
               />
             </View>
           </Animated.View>
         </ScrollView>
 
         {/* Footer Action */}
-        <Animated.View entering={FadeInDown.duration(600).delay(400)} style={styles.footer}>
-          <TouchableOpacity activeOpacity={0.8} onPress={handleContinue}>
-            <LinearGradient
-              colors={[SECONDARY, "#ca8a04"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.continueBtn}
-            >
-              <Text style={styles.continueBtnText}>Continue</Text>
-              <Ionicons name="arrow-forward" size={18} color="#fff" style={{ marginLeft: 8 }} />
-            </LinearGradient>
+        <Animated.View entering={FadeInDown.duration(600).delay(600)} style={styles.footer}>
+          <TouchableOpacity style={styles.continueBtn} activeOpacity={0.8} onPress={handleContinue}>
+            <Text style={styles.continueBtnText}>Continue</Text>
           </TouchableOpacity>
         </Animated.View>
       </SafeAreaView>
@@ -204,169 +203,136 @@ export default function PEPDetailsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: BACKGROUND },
+  container: { flex: 1, backgroundColor: WHITE },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'android' ? 40 : 20,
+    paddingBottom: 15,
   },
   backBtn: {
     width: 44,
     height: 44,
-    borderRadius: 14,
-    backgroundColor: GLASS,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
-  headerLogo: { flexDirection: "row", alignItems: "center", gap: 6 },
-  headerBrand: {
-    fontSize: 17,
-    fontWeight: "900",
-    color: "#fff",
-    letterSpacing: -0.5,
-  },
+  headerLogo: { flex: 1, alignItems: "center" },
 
   scrollContent: {
     padding: 24,
-    paddingBottom: 130,
+    paddingBottom: 130, // Space for footer
   },
   pageTitle: {
-    color: "#fff",
-    fontSize: 28,
-    fontWeight: "900",
+    color: TEXT_MAIN,
+    fontSize: 18,
+    fontWeight: "800",
     textAlign: "center",
-    marginTop: 10,
-    letterSpacing: -0.5,
-  },
-  pageSubtitle: {
-    color: SECONDARY,
-    fontSize: 14,
-    fontWeight: "700",
-    textAlign: "center",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginTop: 6,
-    marginBottom: 40,
+    marginBottom: 30,
   },
 
   progressContainer: {
-    backgroundColor: "rgba(17, 24, 39, 0.4)",
-    padding: 20,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: GLASS,
-    marginBottom: 35,
+    marginBottom: 30,
   },
   progressHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginBottom: 12,
+    alignItems: "baseline",
+    marginBottom: 10,
   },
   progressPercentage: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "800",
+    color: TEXT_MAIN,
+    fontSize: 15,
+    fontWeight: "600",
   },
   progressSteps: {
-    color: "#94a3b8",
-    fontSize: 13,
-    fontWeight: "700",
+    color: "#cbd5e1",
+    fontSize: 12,
+    fontWeight: "500",
   },
   progressBarBg: {
-    height: 8,
-    backgroundColor: "rgba(255,255,255,0.05)",
-    borderRadius: 4,
+    height: 6,
+    backgroundColor: "#e2e8f0",
+    borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    borderRadius: 4,
+    borderRadius: 3,
   },
 
-  questionCard: {
-    backgroundColor: "rgba(234, 179, 8, 0.05)",
-    padding: 20,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "rgba(234, 179, 8, 0.2)",
-    marginBottom: 25,
-  },
-  questionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 8,
-  },
-  iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(234, 179, 8, 0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  questionLabel: {
-    color: SECONDARY,
-    fontSize: 15,
-    fontWeight: "800",
+  questionSection: {
+    marginBottom: 20,
   },
   questionText: {
-    color: "#cbd5e1",
+    color: TEXT_SECONDARY,
     fontSize: 14,
+    lineHeight: 24,
+    fontWeight: "400",
+  },
+
+  radioGroup: {
+    flexDirection: "row",
+    gap: 30,
+    marginBottom: 20,
+  },
+  radioOption: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  radioOuter: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: "#cbd5e1",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+    backgroundColor: WHITE,
+  },
+  radioOuterActive: {
+    borderColor: PRIMARY,
+  },
+  radioInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: PRIMARY,
+  },
+  radioLabel: {
+    color: TEXT_SECONDARY,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+
+  hintText: {
+    color: "#94a3b8",
+    fontSize: 13,
     lineHeight: 22,
+    marginBottom: 30,
   },
 
   formContainer: {
     gap: 16,
   },
-  formHeader: {
-    color: "#94a3b8",
-    fontSize: 14.5,
-    lineHeight: 22,
-    fontWeight: "600",
-    marginBottom: 10,
-  },
   formGroup: {
-    gap: 18,
+    gap: 16,
   },
   inputWrapper: {
     gap: 8,
   },
-  inputLabel: {
-    color: "#cbd5e1",
-    fontSize: 14,
-    fontWeight: "700",
-  },
   textInput: {
-    backgroundColor: "rgba(17, 24, 39, 0.6)",
-    borderWidth: 1.5,
-    borderColor: GLASS,
-    borderRadius: 16,
-    paddingHorizontal: 18,
-    height: 56,
-    color: "#fff",
-    fontSize: 15,
-  },
-  dropdownContainer: {
-    backgroundColor: "rgba(17, 24, 39, 0.6)",
-    borderWidth: 1.5,
-    borderColor: GLASS,
-    borderRadius: 16,
-    paddingHorizontal: 18,
-    height: 56,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  dropdownText: {
-    color: "#64748b",
-    fontSize: 15,
+    backgroundColor: WHITE,
+    borderWidth: 1,
+    borderColor: BORDER_COLOR,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 52,
+    color: TEXT_MAIN,
+    fontSize: 14,
+    fontWeight: "400",
   },
 
   footer: {
@@ -376,25 +342,18 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 24,
     paddingBottom: 34,
-    backgroundColor: BACKGROUND,
-    borderTopWidth: 1,
-    borderTopColor: GLASS,
+    backgroundColor: WHITE,
   },
   continueBtn: {
-    flexDirection: "row",
+    backgroundColor: PRIMARY,
     paddingVertical: 18,
-    borderRadius: 16,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: SECONDARY,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 8,
   },
   continueBtnText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "900",
+    color: WHITE,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

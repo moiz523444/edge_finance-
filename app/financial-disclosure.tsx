@@ -1,6 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import {
   SafeAreaView,
@@ -9,38 +6,44 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
+  Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-const PRIMARY = '#10b981'; // Emerald
-const SECONDARY = '#eab308'; // Amber
-const BACKGROUND = '#0a0f1c';
-const WHITE = '#FFFFFF';
-const TEXT_SECONDARY = '#94a3b8';
+const PRIMARY = '#2E8B57'; // Edge Finance Green
+const WHITE = '#ffffff';
+const TEXT_MAIN = '#1f2937';
+const TEXT_SECONDARY = '#64748b';
 
 export default function FinancialDisclosureScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.content}>
-          
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={28} color={WHITE} />
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color={TEXT_MAIN} />
           </TouchableOpacity>
-
-          <View style={styles.logoSection}>
-            <View style={[styles.logoBadge, { backgroundColor: PRIMARY + '15' }]}>
-              <Ionicons name="flash" size={42} color={PRIMARY} />
-            </View>
-            <Text style={styles.brandName}>EDGE <Text style={{ color: PRIMARY }}>FINANCE</Text></Text>
+          <View style={styles.headerLogo}>
+            <Image 
+              source={require('../assets/images/logo.png')} 
+              style={{ width: 140, height: 40, resizeMode: 'contain' }} 
+            />
           </View>
+          <View style={{ width: 44 }} />
+        </View>
 
+        <View style={styles.content}>
           <Text style={styles.titleText}>Accurate Financial Disclosure</Text>
 
-          <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true}>
+          <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
             <Animated.View entering={FadeInDown.delay(200)}>
               <Text style={styles.bodyText}>
                 {"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.\n\n"}
@@ -51,13 +54,16 @@ export default function FinancialDisclosureScreen() {
             </Animated.View>
           </ScrollView>
 
-          <TouchableOpacity 
-            style={[styles.actionBtn, { backgroundColor: SECONDARY }]} 
-            onPress={() => router.push('/simah-consent')}
-          >
-            <Text style={[styles.actionBtnText, { color: BACKGROUND }]}>Accept And Continue</Text>
-          </TouchableOpacity>
-
+          {/* Footer Action */}
+          <Animated.View entering={FadeInDown.duration(600).delay(400)} style={styles.footer}>
+            <TouchableOpacity 
+              style={styles.actionBtn} 
+              activeOpacity={0.8}
+              onPress={() => router.push('/simah-consent')}
+            >
+              <Text style={styles.actionBtnText}>Accept And Continue</Text>
+            </TouchableOpacity>
+          </Animated.View>
         </View>
       </SafeAreaView>
     </View>
@@ -65,15 +71,71 @@ export default function FinancialDisclosureScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: BACKGROUND },
-  content: { flex: 1, paddingHorizontal: 30, paddingTop: 40 },
-  backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'flex-start', marginBottom: 20 },
-  logoSection: { alignItems: 'center', marginBottom: 30 },
-  logoBadge: { width: 80, height: 80, borderRadius: 24, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  brandName: { fontSize: 28, fontWeight: '900', color: WHITE, letterSpacing: -0.5 },
-  titleText: { fontSize: 24, fontWeight: '800', color: WHITE, textAlign: 'center', marginBottom: 25 },
-  scrollView: { flex: 1, marginBottom: 20, paddingRight: 10 },
-  bodyText: { fontSize: 14, color: TEXT_SECONDARY, lineHeight: 24, textAlign: 'justify' },
-  actionBtn: { height: 65, borderRadius: 22, justifyContent: 'center', alignItems: 'center', shadowColor: SECONDARY, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 8, marginBottom: 20 },
-  actionBtnText: { fontSize: 17, fontWeight: '900', letterSpacing: 0.5 },
+  container: { flex: 1, backgroundColor: WHITE },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'android' ? 40 : 20,
+    paddingBottom: 15,
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerLogo: { flex: 1, alignItems: "center" },
+
+  content: { flex: 1, paddingTop: 10 },
+  titleText: { 
+    fontSize: 18, 
+    fontWeight: '800', 
+    color: TEXT_MAIN, 
+    textAlign: 'center', 
+    marginBottom: 25,
+    paddingHorizontal: 20,
+  },
+  
+  scrollView: { 
+    flex: 1, 
+    marginBottom: 20, 
+    paddingHorizontal: 30,
+  },
+  bodyText: { 
+    fontSize: 13, 
+    color: TEXT_SECONDARY, 
+    lineHeight: 22, 
+    textAlign: 'justify',
+    paddingBottom: 100, // Extra padding for footer space
+  },
+
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 24,
+    paddingBottom: 34,
+    backgroundColor: WHITE,
+    // Add gradient/shadow to fade text below footer
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -5 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  actionBtn: { 
+    backgroundColor: PRIMARY,
+    paddingVertical: 18,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  actionBtnText: { 
+    color: WHITE,
+    fontSize: 16,
+    fontWeight: "600",
+  },
 });

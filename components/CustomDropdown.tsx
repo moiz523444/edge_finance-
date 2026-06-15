@@ -9,14 +9,12 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 
-const PRIMARY = "#10b981"; // Emerald
-const SECONDARY = "#eab308"; // Gold/Orange Theme
-const BACKGROUND = "#0a0a0f";
-const CARD_BG = "#111827";
-const GLASS = "rgba(255,255,255,0.07)";
-const BORDER_COLOR = "rgba(255,255,255,0.1)";
+const PRIMARY = "#2E8B57";
+const WHITE = "#ffffff";
+const TEXT_MAIN = "#1f2937";
+const TEXT_SECONDARY = "#64748b";
+const BORDER_COLOR = "#cbd5e1";
 
 interface Option {
   label: string;
@@ -24,7 +22,7 @@ interface Option {
 }
 
 interface CustomDropdownProps {
-  label: string;
+  label?: string; // made optional
   options: Option[];
   selectedValue: string;
   onSelect: (val: string) => void;
@@ -49,14 +47,14 @@ export default function CustomDropdown({
 
   return (
     <View style={styles.inputWrapper}>
-      <Text style={styles.inputLabel}>{label}</Text>
+      {label ? <Text style={styles.inputLabel}>{label}</Text> : null}
       <TouchableOpacity
         style={styles.dropdownContainer}
         activeOpacity={0.8}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={[styles.dropdownText, !selectedOption && { color: "#64748b" }]}>
-          {selectedOption ? selectedOption.label : selectedValue || placeholder}
+        <Text style={[styles.dropdownText, !selectedOption && { color: "#94a3b8" }]}>
+          {selectedOption ? selectedOption.label : placeholder}
         </Text>
         <Ionicons name="chevron-down" size={20} color="#94a3b8" />
       </TouchableOpacity>
@@ -71,50 +69,47 @@ export default function CustomDropdown({
           <View style={styles.modalOverlay}>
             <TouchableWithoutFeedback>
               <View style={styles.modalContentWrapper}>
-                <LinearGradient
-                  colors={[CARD_BG, "#0f172a"]}
-                  style={styles.modalContent}
-                >
+                <View style={styles.modalContent}>
                   <View style={styles.dragPill} />
                   
                   <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitle}>{label}</Text>
+                    <Text style={styles.modalTitle}>{label || "Select Option"}</Text>
                     <TouchableOpacity 
                       onPress={() => setModalVisible(false)}
                       style={styles.closeBtn}
                     >
-                      <Ionicons name="close" size={20} color="#94a3b8" />
+                      <Ionicons name="close" size={20} color={TEXT_MAIN} />
                     </TouchableOpacity>
                   </View>
 
-                <FlatList
-                  data={options}
-                  keyExtractor={(item) => item.value}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={[
-                        styles.optionItem,
-                        selectedValue === item.value && styles.optionItemSelected,
-                      ]}
-                      onPress={() => handleSelect(item.value)}
-                    >
-                      <Text
+                  <FlatList
+                    data={options}
+                    keyExtractor={(item) => item.value}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
                         style={[
-                          styles.optionText,
-                          selectedValue === item.value && styles.optionTextSelected,
+                          styles.optionItem,
+                          selectedValue === item.value && styles.optionItemSelected,
                         ]}
+                        onPress={() => handleSelect(item.value)}
                       >
-                        {item.label}
-                      </Text>
-                      {selectedValue === item.value && (
-                        <Ionicons name="checkmark" size={20} color={SECONDARY} />
-                      )}
-                    </TouchableOpacity>
-                  )}
-                  contentContainerStyle={{ paddingBottom: 20 }}
-                  showsVerticalScrollIndicator={false}
-                />
-                </LinearGradient>
+                        <Text
+                          style={[
+                            styles.optionText,
+                            selectedValue === item.value && styles.optionTextSelected,
+                          ]}
+                        >
+                          {item.label}
+                        </Text>
+                        {selectedValue === item.value && (
+                          <Ionicons name="checkmark" size={20} color={PRIMARY} />
+                        )}
+                      </TouchableOpacity>
+                    )}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                    showsVerticalScrollIndicator={false}
+                  />
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -129,51 +124,48 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   inputLabel: {
-    color: "#cbd5e1",
+    color: TEXT_MAIN,
     fontSize: 14,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   dropdownContainer: {
-    backgroundColor: "rgba(17, 24, 39, 0.6)",
-    borderWidth: 1.5,
-    borderColor: GLASS,
-    borderRadius: 16,
-    paddingHorizontal: 18,
-    height: 56,
+    backgroundColor: WHITE,
+    borderWidth: 1,
+    borderColor: BORDER_COLOR,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 52,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   dropdownText: {
-    color: "#fff",
-    fontSize: 15,
+    color: TEXT_MAIN,
+    fontSize: 14,
+    fontWeight: "400",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "flex-end",
   },
   modalContentWrapper: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     overflow: "hidden",
     maxHeight: "80%",
-    borderTopWidth: 1,
-    borderTopColor: BORDER_COLOR,
-    borderLeftWidth: 1,
-    borderLeftColor: BORDER_COLOR,
-    borderRightWidth: 1,
-    borderRightColor: BORDER_COLOR,
+    backgroundColor: WHITE,
   },
   modalContent: {
     padding: 24,
     paddingTop: 12,
+    backgroundColor: WHITE,
   },
   dragPill: {
     width: 40,
     height: 5,
     borderRadius: 2.5,
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "#e2e8f0",
     alignSelf: "center",
     marginBottom: 20,
   },
@@ -184,44 +176,40 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   modalTitle: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "900",
-    letterSpacing: -0.5,
+    color: TEXT_MAIN,
+    fontSize: 18,
+    fontWeight: "700",
   },
   closeBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "rgba(255,255,255,0.05)",
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#f1f5f9",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: GLASS,
   },
   optionItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 18,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: GLASS,
+    borderBottomColor: "#f1f5f9",
   },
   optionItemSelected: {
-    backgroundColor: "rgba(234, 179, 8, 0.08)",
-    borderRadius: 16,
+    backgroundColor: "#f0fdf4",
+    borderRadius: 12,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: SECONDARY,
+    borderBottomWidth: 0,
     marginVertical: 4,
   },
   optionText: {
-    color: "#cbd5e1",
-    fontSize: 16,
-    fontWeight: "600",
+    color: TEXT_SECONDARY,
+    fontSize: 15,
+    fontWeight: "500",
   },
   optionTextSelected: {
-    color: SECONDARY,
-    fontWeight: "800",
+    color: PRIMARY,
+    fontWeight: "700",
   },
 });

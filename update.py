@@ -1,228 +1,25 @@
-import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect } from "react";
-import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-  Modal,
-  RefreshControl,
-} from "react-native";
-import { useRouter } from "expo-router";
-import Animated, { ZoomIn } from "react-native-reanimated";
-import { apiService } from "@/services/api";
-import { getIdNumber } from "@/services/secureStore";
+import sys
 
-const PRIMARY = "#2E8B57"; // Green
-const SECONDARY = "#2E8B57"; // Green
-const BACKGROUND = "#ffffff";
-const CARD_BG = "#ffffff";
-const WHITE = "#ffffff";
-const TEXT_MAIN = "#111827";
-const TEXT_SECONDARY = "#6B7280";
-const BORDER = "#D1D5DB";
-const ERROR = "#ef4444";
-const GLASS = "rgba(0,0,0,0.05)";
+file_path = 'e:\\Finsol\\edge_finance-\\app\\(tabs)\\dashboard.tsx'
+with open(file_path, 'r', encoding='utf-8') as f:
+    content = f.read()
 
-export default function HomeScreen() {
-  const router = useRouter();
-  const [dashboardData, setDashboardData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [showNotification, setShowNotification] = useState<boolean>(false);
-  const [activeNotification, setActiveNotification] = useState<any>(null);
+# Replace loading and error gradient blocks
+content = content.replace(
+'''        <LinearGradient
+          colors={[BACKGROUND, "#0f172a", BACKGROUND]}
+          style={StyleSheet.absoluteFill}
+        />''', ''
+)
 
-  const loadDashboard = async (silent = false) => {
-    if (!silent) setIsLoading(true);
-    setError(null);
-    try {
-      const savedId = await getIdNumber();
-      const idToUse = savedId || "1001123530"; // Fallback sandbox ID
-      console.log("[Dashboard] Fetching data for user ID:", idToUse);
-      const response = await apiService.dashboard.getDashboard(idToUse);
-      
-      if (response.SUCCEEDED && response.DATA) {
-        const parsedData = Array.isArray(response.DATA) ? response.DATA[0] : response.DATA;
-        setDashboardData(parsedData);
-        
-        // Handle popup notifications if present
-        if (parsedData?.POPUP_NOTIFICATIONS && parsedData.POPUP_NOTIFICATIONS.length > 0) {
-          setActiveNotification(parsedData.POPUP_NOTIFICATIONS[0]);
-          setShowNotification(true);
-        } else if (response.RESPONSEPOPUP) {
-          setActiveNotification({
-            MESSAGETITLE: response.MESSAGETITLE || "Alert",
-            MESSAGETEXT: response.MESSAGETEXT || "New notification received.",
-            BUTTONTEXT: response.BUTTONTEXT || "Ok"
-          });
-          setShowNotification(true);
-        }
-      } else {
-        setError(response.RESPONSEDESCRIPTION || "Failed to load dashboard data.");
-      }
-    } catch (err: any) {
-      console.error("[Dashboard Load Error]", err);
-      setError(err.message || "Failed to connect to the server.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+# Find the start of the return block
+start_idx = content.find('  return (\n    <View style={styles.container}>')
+if start_idx == -1:
+    print('Could not find start of return block')
+    sys.exit(1)
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadDashboard(true);
-    setRefreshing(false);
-  };
-
-  useEffect(() => {
-    loadDashboard();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <StatusBar style="light" />
-
-        <ActivityIndicator size="large" color={PRIMARY} />
-        <Text style={styles.loadingText}>Syncing finance dashboard...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <StatusBar style="light" />
-
-        <Ionicons name="cloud-offline-outline" size={64} color="#ef4444" style={{ marginBottom: 10 }} />
-        <Text style={styles.errorText}>Connection lost</Text>
-        <Text style={styles.errorSubText}>{error}</Text>
-        <TouchableOpacity style={styles.retryBtn} onPress={() => loadDashboard()}>
-          <Text style={styles.retryBtnText}>Retry Connection</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  const header = dashboardData?.DASHBOARD_HEADER?.[0] || {
-    USERNAME: "User",
-    GREETINGS: "Welcome Back",
-    NEWNOTIFICATIONS: false,
-    NEWNOTIFICATIONCOUNT: 0,
-    ALLOWLOANAPPLICATION: true,
-    ALLOWTRANSACTIONS: true,
-  };
-
-  const activeContract = dashboardData?.CURRENT_CONTRACTS?.[0];
-
-  // Clean greeting to avoid "Hello Hello User"
-  let displayName = header.USERNAME || "User";
-  if (displayName.toLowerCase().startsWith("hello ")) {
-    displayName = displayName.substring(6).trim();
-  }
-
-  // Dynamic details for overview
-  let remainingPercent = 100;
-  let utilizedPercent = 0;
-  let remainingAmount = 0;
-  let utilizedAmount = 0;
-
-  if (activeContract) {
-    const total = activeContract.TOTALLOANAMOUNT || 46000;
-    const os = activeContract.TOTALLOANRECEIVABLEOS || 46000;
-    remainingAmount = os;
-    utilizedAmount = total - os;
-    if (utilizedAmount < 0) utilizedAmount = 0;
-    remainingPercent = Math.round((remainingAmount / total) * 100);
-    utilizedPercent = 100 - remainingPercent;
-  }
-
-  const renderApplications = () => {
-    const apps = dashboardData?.CURRENT_APPLICATIONS || [];
-    if (apps.length === 0) {
-      return (
-        <View style={[styles.appCard, { alignItems: 'center', paddingVertical: 30 }]}>
-          <Ionicons name="document-text-outline" size={32} color="#475569" />
-          <Text style={[styles.appTitle, { color: '#64748b', fontSize: 16, marginTop: 10, marginBottom: 0 }]}>
-            No active applications
-          </Text>
-        </View>
-      );
-    }
-
-    return apps.slice(0, 3).map((app: any, idx: number) => {
-      const currentStage = app.CURRENTSTAGE || 1;
-      const totalStages = app.TOTALSTAGES || 12;
-      const progressPercent = Math.round((currentStage / totalStages) * 100);
-      const dateFormatted = app.APPLICATIONDATE 
-        ? new Date(app.APPLICATIONDATE).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-        : "Recent";
-
-      return (
-        <View key={app.APPLICATIONNO || idx} style={[styles.appCard, { marginBottom: 16 }]}>
-          <View style={styles.appHeader}>
-            <Text style={[styles.appId, { color: PRIMARY }]}>#{app.APPLICATIONNO}</Text>
-            <Text style={styles.appDate}>{dateFormatted}</Text>
-          </View>
-          <Text style={styles.appTitle}>{app.PRODUCTNAME || "Tawarruq"} - {app.STAGENAME}</Text>
-
-          <View style={styles.appDetailsRow}>
-            <View>
-               <Text style={styles.appLabel}>Requested Amount</Text>
-               <Text style={styles.appValue}>SAR {app.REQUESTAMOUNT?.toLocaleString() || "0"}</Text>
-            </View>
-            <View style={{ alignItems: "flex-end" }}>
-               <Text style={styles.appLabel}>Status</Text>
-               <Text style={[styles.appStatus, { color: PRIMARY }]}>
-                 {app.APPLICATIONSTATUS || "In Progress"}
-               </Text>
-            </View>
-          </View>
-
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                { width: `${progressPercent}%`, backgroundColor: PRIMARY },
-              ]}
-            />
-          </View>
-
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={{ color: '#64748b', fontSize: 13, fontWeight: '600' }}>
-              Stage {currentStage} of {totalStages} ({progressPercent}%)
-            </Text>
-            <TouchableOpacity 
-              style={[styles.detailsBtn, { paddingVertical: 8, paddingHorizontal: 16 }]}
-              onPress={() => {
-                if (!header.ALLOWLOANAPPLICATION) {
-                  setActiveNotification({
-                    MESSAGETITLE: "Action Blocked",
-                    MESSAGETEXT: "Action is disabled for this user.",
-                    BUTTONTEXT: "Ok"
-                  });
-                  setShowNotification(true);
-                  return;
-                }
-                router.push('/personal-finance');
-              }}
-            >
-              <Text style={styles.detailsBtnText}>Resume</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    });
-  };
-
-  return (
+# The new return block and styles
+new_tail = '''  return (
     <View style={styles.container}>
       <StatusBar style="dark" />
 
@@ -242,8 +39,7 @@ export default function HomeScreen() {
           {/* Top Bar */}
           <View style={styles.topBar}>
             <TouchableOpacity style={styles.menuBtn}>
-              <View style={{ width: 22, height: 3, backgroundColor: PRIMARY, borderRadius: 2, marginBottom: 6 }} />
-              <View style={{ width: 14, height: 3, backgroundColor: PRIMARY, borderRadius: 2 }} />
+              <Ionicons name="menu" size={32} color={PRIMARY} />
             </TouchableOpacity>
 
             <View style={styles.headerLogo}>
@@ -253,26 +49,19 @@ export default function HomeScreen() {
               />
             </View>
 
-            <View style={{ width: 32 }} />
+            <TouchableOpacity style={styles.notificationBtn}>
+              <Ionicons name="notifications-outline" size={24} color={PRIMARY} />
+              {header.NEWNOTIFICATIONS && <View style={styles.notifBadge} />}
+            </TouchableOpacity>
           </View>
 
           {/* Greeting */}
           <View style={styles.greetingRow}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', zIndex: 10 }}>
-              <View>
-                <Text style={styles.helloText}>Hello {displayName}</Text>
-                <Text style={styles.morningText}>{header.GREETINGS || "Good Morning"}</Text>
-              </View>
-              <TouchableOpacity style={styles.notificationBtn} onPress={() => setShowNotification(true)}>
-                <Ionicons name="notifications-outline" size={20} color={PRIMARY} />
-                {header.NEWNOTIFICATIONS && <View style={[styles.notifBadge, { top: 8, right: 8 }]} />}
-              </TouchableOpacity>
+            <View>
+              <Text style={styles.helloText}>Hello {displayName}</Text>
+              <Text style={styles.morningText}>{header.GREETINGS || "Good Morning"}</Text>
             </View>
             <View style={styles.avatarContainer}>
-              <Image
-                source={require('../../assets/images/vector.png')}
-                style={styles.vectorBg}
-              />
               <Image
                 source={header.USERPIC ? { uri: `data:image/${header.USERPICFORMAT || 'jpeg'};base64,${header.USERPIC}` } : { uri: "https://i.pravatar.cc/150?u=edge" }}
                 style={styles.avatar}
@@ -402,7 +191,7 @@ export default function HomeScreen() {
                     <Ionicons name="cash-outline" size={40} color={PRIMARY} />
                   </View>
                   <Text style={styles.promoDesc}>Get Instant</Text>
-                  <Text style={styles.promoTitle}>loan of up to{"\n"}<Text style={styles.promoAmountText}>SAR 25,000</Text></Text>
+                  <Text style={styles.promoTitle}>loan of up to{"\\n"}<Text style={styles.promoAmountText}>SAR 25,000</Text></Text>
                   <TouchableOpacity 
                     style={styles.promoApplyBtn}
                     onPress={() => {
@@ -510,17 +299,16 @@ const styles = StyleSheet.create({
   
   scrollContent: { paddingBottom: 30, paddingTop: 10 },
   topBar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 25, paddingTop: 20, marginBottom: 30 },
-  menuBtn: { justifyContent: "center", alignItems: "flex-start", width: 32 },
+  menuBtn: { justifyContent: "center", alignItems: "center" },
   headerLogo: { flex: 1, alignItems: "center" },
-  notificationBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: PRIMARY + '15', justifyContent: "center", alignItems: "center", marginLeft: 15 },
+  notificationBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: PRIMARY + '15', justifyContent: "center", alignItems: "center" },
   notifBadge: { position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: 5, backgroundColor: "#ef4444", borderWidth: 2, borderColor: WHITE },
   
-  greetingRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingLeft: 25, marginBottom: 30, zIndex: 10, elevation: 10, height: 80 },
-  helloText: { fontSize: 16, color: PRIMARY, fontWeight: "500", lineHeight: 22 },
-  morningText: { fontSize: 22, fontWeight: "600", color: PRIMARY, marginTop: 2, lineHeight: 28 },
-  avatarContainer: { position: "relative", width: 60, height: 60, marginRight: 25, zIndex: 1 },
-  vectorBg: { position: 'absolute', width: 140, height: 98, right: -25, top: -20, resizeMode: 'contain', zIndex: -1, opacity: 0.3 },
-  avatar: { width: 60, height: 60, borderRadius: 30, zIndex: 2 },
+  greetingRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 25, marginBottom: 30 },
+  helloText: { fontSize: 18, color: PRIMARY, fontWeight: "500", lineHeight: 24 },
+  morningText: { fontSize: 24, fontWeight: "600", color: PRIMARY, marginTop: 2, lineHeight: 30 },
+  avatarContainer: { position: "relative" },
+  avatar: { width: 64, height: 64, borderRadius: 32 },
 
   noLoanCardPremium: { flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: WHITE, marginHorizontal: 24, paddingVertical: 24, borderRadius: 16, borderWidth: 1, borderColor: BORDER, marginBottom: 35, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
   noLoanTitle: { fontSize: 18, fontWeight: "500", color: "#9CA3AF", marginLeft: 15 },
@@ -573,3 +361,11 @@ const styles = StyleSheet.create({
   tryAgainBtn: { width: "100%", height: 56, borderRadius: 16, backgroundColor: PRIMARY, justifyContent: "center", alignItems: "center" },
   tryAgainText: { fontSize: 16, fontWeight: "700", color: WHITE },
 });
+'''
+
+# Slice the content
+new_content = content[:start_idx] + new_tail
+
+with open(file_path, 'w', encoding='utf-8') as f:
+    f.write(new_content)
+print('Dashboard UI updated successfully.')
