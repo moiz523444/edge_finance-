@@ -85,6 +85,7 @@ export default function SignupScreen() {
   const validatePhone = (phone: string) => {
     if (!phone) return 'Phone number is required';
     if (!/^\d+$/.test(phone)) return 'Phone must contain numbers only';
+    if (phone.length !== 9) return 'Phone must be exactly 9 digits';
     return '';
   };
 
@@ -117,9 +118,9 @@ export default function SignupScreen() {
   const handlePhoneChange = (text: string) => {
     const numeric = text.replace(/[^0-9]/g, '');
     setPhoneNumber(numeric);
-    if (phoneTouched) {
-      setPhoneError(validatePhone(numeric));
-    }
+    // Validate immediately as requested by the user
+    setPhoneTouched(true);
+    setPhoneError(validatePhone(numeric));
   };
 
   const handlePasswordChange = (text: string) => {
@@ -303,8 +304,8 @@ export default function SignupScreen() {
                     placeholder="Mobile Number"
                     placeholderTextColor={TEXT_SECONDARY}
                     style={styles.input}
-                    keyboardType="phone-pad"
-                    maxLength={15}
+                    keyboardType="numeric"
+                    maxLength={9}
                     value={phoneNumber}
                     onChangeText={handlePhoneChange}
                     onBlur={handlePhoneBlur}

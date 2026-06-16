@@ -126,6 +126,12 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="loan-approved"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

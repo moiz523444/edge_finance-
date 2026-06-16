@@ -18,13 +18,13 @@ const PRIMARY = '#2E8B57'; // Edge Finance Green
 const WHITE = '#ffffff';
 const TEXT_MAIN = '#1f2937';
 const TEXT_SECONDARY = '#94a3b8';
-const GREY_TAB = '#4b5563'; // Dark grey for the icon tab
 
-export default function ContractSigningScreen() {
+export default function PromissoryNoteScreen() {
   const router = useRouter();
 
-  const handleSignContract = () => {
-    router.push({ pathname: '/otp', params: { from: 'contract-signing' } });
+  const handleProceed = () => {
+    // Navigate to IBAN screen
+    router.push('/iban');
   };
 
   return (
@@ -61,9 +61,12 @@ export default function ContractSigningScreen() {
               
               <View style={styles.cardContent}>
                 <View style={styles.textContainer}>
-                  <Text style={styles.cardTitle}>Contract Signing</Text>
+                  <Text style={styles.cardTitle}>Promissory Note Signing</Text>
                   <Text style={styles.cardDescription}>
-                    Please Click below to sign contract.{"\n"}Same Link has been sent by SMS also.
+                    A SMS has been sent for promissory note approval, kindly approve the request in order to proceed
+                  </Text>
+                  <Text style={styles.cardDescriptionSecondary}>
+                    After signing contract and approving promissory note, Please click below to proceed
                   </Text>
                 </View>
                 
@@ -79,9 +82,9 @@ export default function ContractSigningScreen() {
               <TouchableOpacity 
                 style={styles.signBtn} 
                 activeOpacity={0.8}
-                onPress={handleSignContract}
+                onPress={handleProceed}
               >
-                <Text style={styles.signBtnText}>Sign Contract</Text>
+                <Text style={styles.signBtnText}>Proceed</Text>
               </TouchableOpacity>
               
             </View>
