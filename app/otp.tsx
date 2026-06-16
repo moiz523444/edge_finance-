@@ -40,6 +40,7 @@ export default function OTPScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const inputs = useRef<Array<TextInput | null>>([]);
 
+  const from = (params.from as string) || '';
   const tpuRecId = (params.tpuRecId as string) || '';
   const transactionId = (params.transactionId as string) || '';
   const idNumber = (params.idNumber as string) || '';
@@ -145,9 +146,33 @@ export default function OTPScreen() {
     */
 
     // MOCK SUCCESS FOR NOW
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push('/final-success');
+    setTimeout(async () => {
+      if (from === 'login') {
+        try {
+          const response = await apiService.auth.updateDevice(idNumber, otpCode);
+          setIsLoading(false);
+          if (response.SUCCEEDED) {
+            router.replace('/(tabs)/dashboard');
+          } else {
+            setWarningTitle('Verification Failed');
+            setWarningDesc(response.MESSAGETEXT || 'Failed to verify OTP.');
+            setWarningButtonText('Ok');
+            setWarningIcon('alert-circle-outline');
+            setWarningIconColor(ERROR);
+            setOnWarningAction(() => () => setShowWarning(false));
+            setShowWarning(true);
+          }
+        } catch (error) {
+          setIsLoading(false);
+          console.error(error);
+        }
+      } else if (from === 'contract-signing') {
+        setIsLoading(false);
+        router.push('/final-success');
+      } else {
+        setIsLoading(false);
+        router.push('/success');
+      }
     }, 1000);
   };
 

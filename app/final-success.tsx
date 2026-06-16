@@ -22,8 +22,8 @@ export default function FinalSuccessScreen() {
   const router = useRouter();
 
   const handleOk = () => {
-    // Navigate back to dashboard
-    router.replace('/(tabs)/dashboard');
+    // Navigate to promissory note
+    router.replace('/promissory-note');
   };
 
   return (
